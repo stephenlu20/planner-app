@@ -153,6 +153,18 @@ Journal views include:
 
 ## Data Model Summary
 
+```
+User
+├── Calendar
+│   └── Event
+│       └── Event (child)
+│           └── Log
+│
+└── Template
+    └── Template (child)
+        └── Log
+```
+
 A **User** owns all data in the system. Each User may create multiple **Calendars**, which represent distinct planning domains such as fitness, personal life, or work.
 
 A **Calendar** contains many **Events**. Each Event belongs to exactly one Calendar and represents a planned or completed activity on a specific date.
