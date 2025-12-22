@@ -1,0 +1,129 @@
+@startuml Calendar Application Data Model
+
+!define PRIMARY_KEY <b><color:blue>PK</color></b>
+!define FOREIGN_KEY <color:green>FK</color>
+
+entity "User" as user {
+  PRIMARY_KEY id : UUID
+  --
+  email : String
+  name : String
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "Calendar" as calendar {
+  PRIMARY_KEY id : UUID
+  --
+  FOREIGN_KEY userId : UUID
+  name : String
+  description : String?
+  isVisible : Boolean
+  createdAt : DateTime
+  updatedAt : DateTime
+}
+
+entity "Event" as event {
+  PRIMARY_KEY id : UUID
+  --
+  FOREIGN_KEY calendarId : UUID
+  FOREIGN_KEY parentEventId : UUID?
+  title : String
+  date : Date?
+  isCompleted : Boolean?
+  noteText : String?
+  position : Integer
+  createdAt : DateTime
+  updatedAt : DateTime
+  --
+  <i>Constraints:</i>
+  • Top-level: date required, isCompleted present
+  • Child: inherits calendar & date context
+}
+
+entity "Template" as template {
+  PRIMARY_KEY id : UUID
+  --
+  FOREIGN_KEY userId : UUID
+  FOREIGN_KEY parentTemplateId : UUID?
+  title : String
+  position : Integer
+  createdAt : DateTime
+  updatedAt : DateTime
+  --
+  <i>Note: No date or completion state</i>
+}
+
+entity "Log" as log {
+  PRIMARY_KEY id : UUID
+  --
+  FOREIGN_KEY eventId : UUID?
+  FOREIGN_KEY templateId : UUID?
+  type : LogType
+  label : String
+  value : JSON
+  metadata : JSON?
+  position : Integer
+  createdAt : DateTime
+  updatedAt : DateTime
+  --
+  <i>LogType: text | number | duration | table | checkbox</i>
+  <i>Belongs to Event XOR Template</i>
+}
+
+' Relationships
+user ||--o{ calendar : "owns"
+user ||--o{ template : "creates"
+
+calendar ||--o{ event : "contains"
+
+event ||--o{ event : "parent/child\n(self-reference)"
+event ||--o{ log : "has"
+
+template ||--o{ template : "parent/child\n(self-reference)"
+template ||--o{ log : "defines"
+
+' Notes
+note right of user
+  <b>User</b>
+  • Central account entity
+  • Owns multiple calendars
+  • Creates reusable templates
+end note
+
+note right of calendar
+  <b>Calendar</b>
+  • Domain of planning
+  • Examples: Fitness, Work, Personal
+  • Provides visibility boundaries
+  • Used for journal exports
+end note
+
+note bottom of event
+  <b>Event</b>
+  • Planned or completed activity
+  • Supports hierarchy via parentEventId
+  • Top-level events MUST have date
+  • Optional noteText for journaling
+  • isCompleted only for top-level
+end note
+
+note bottom of template
+  <b>Template</b>
+  • Reusable structure for events
+  • Generates detached Event instances
+  • No date or completion tracking
+  • Supports hierarchy like Events
+end note
+
+note left of log
+  <b>Log</b>
+  • Structured data attachment
+  • Flexible schema via JSON
+  • Types: text, number, duration,
+    table, checkbox/list
+  • Supports analytics & journaling
+  • Belongs to Event OR Template
+end note
+
+@enduml
