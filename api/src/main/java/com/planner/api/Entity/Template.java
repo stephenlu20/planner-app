@@ -10,6 +10,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "templates")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Template {
@@ -64,7 +65,7 @@ public class Template {
         this.index = index;
     }
 
-    private Template(User user, Template parentTemplate, String title, int index) {
+    public Template(User user, Template parentTemplate, String title, int index) {
         this.user = user;
         this.parentTemplate = parentTemplate;
         this.title = title;
