@@ -1,0 +1,350 @@
+    @startuml Planner App - UML Diagram
+
+    ' Styling
+    skinparam classAttributeIconSize 0
+    skinparam linetype ortho
+    skinparam nodesep 60
+    skinparam ranksep 80
+
+    ' ============================================
+    ' DOMAIN ENTITIES
+    ' ============================================
+
+    class User {
+    - id: UUID
+    - name: String
+    __
+    + updateProfile(name: String, timezone: String): void
+    + createCalendar(name: String, color: String): Calendar
+    + getCalendar(id: UUID): Calendar
+    + listCalendars(): List<Calendar>
+    + deleteCalendar(calendarId: UUID): void
+    + createTemplate(title: String): Template
+    + getTemplate(id: UUID): Template
+    + listTemplates(): List<Template>
+    + deleteTemplate(templateId: UUID): void
+    + exportJournal(calendarIds: List<UUID>, dateRange: DateRange): Journal
+    }
+
+    class Calendar {
+    - id: UUID
+    - userId: UUID
+    - name: String
+    - color: String
+    - index: int
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    - events: List<Event>
+    __
+    + rename(name: String): void
+    + setColor(color: String): void
+    + reorder(index: int): void
+    + createEvent(title: String, date: Date): Event
+    + getEvent(id: UUID): Event
+    + listEvents(dateRange: DateRange): List<Event>
+    + listEventsByDate(date: Date): List<Event>
+    + deleteEvent(eventId: UUID): void
+    + applyTemplate(template: Template, date: Date): Event
+    + exportAsJournal(dateRange: DateRange): List<JournalEntry>
+    }
+
+    class Event {
+    - id: UUID
+    - calendarId: UUID
+    - parentEventId: UUID?
+    - title: String
+    - date: Date?
+    - isCompleted: boolean?
+    - noteText: String?
+    - index: int
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    - completedAt: DateTime?
+    - subTasks: List<Event>
+    - logs: List<Log>
+    __
+    + updateTitle(title: String): void
+    + setDate(date: Date): void
+    + complete(): void
+    + uncomplete(): void
+    + addNote(text: String): void
+    + updateNote(text: String): void
+    + deleteNote(): void
+    + addSubTask(title: String): Event
+    + getSubTask(id: UUID): Event
+    + listSubTasks(): List<Event>
+    + deleteSubTask(subTaskId: UUID): void
+    + reorderSubTasks(indexes: Map<UUID, int>): void
+    + addLog(type: LogType, label: String, value: Any): Log
+    + deleteLog(logId: UUID): void
+    + isTopLevel(): boolean
+    + isSubTask(): boolean
+    + generateJournalEntry(): JournalEntry
+    }
+
+    class Template {
+    - id: UUID
+    - userId: UUID
+    - parentTemplateId: UUID?
+    - title: String
+    - description: String
+    - index: int
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    - childTemplates: List<Template>
+    - logs: List<Log>
+    __
+    + updateTitle(title: String): void
+    + updateDescription(description: String): void
+    + reorder(index: int): void
+    + addChildTemplate(title: String): Template
+    + getChildTemplate(id: UUID): Template
+    + listChildTemplates(): List<Template>
+    + deleteChildTemplate(childId: UUID): void
+    + reorderChildren(indexes: Map<UUID, int>): void
+    + addLog(type: LogType, label: String, defaultValue: Any): Log
+    + deleteLog(logId: UUID): void
+    + apply(calendar: Calendar, date: Date): Event
+    + isTopLevel(): boolean
+    + isChildTemplate(): boolean
+    }
+
+    class Log {
+    - id: UUID
+    - eventId: UUID?
+    - templateId: UUID?
+    - type: LogType
+    - label: String
+    - value: Any
+    - index: int
+    - createdAt: DateTime
+    - updatedAt: DateTime
+    __
+    + updateLabel(label: String): void
+    + updateValue(value: Any): void
+    + reorder(index: int): void
+    + formatForJournal(): String
+    }
+
+    ' ============================================
+    ' VALUE OBJECTS & ENUMS
+    ' ============================================
+
+    enum LogType {
+    TEXT
+    NUMBER
+    DURATION
+    TABLE
+    CHECKBOX
+    }
+
+    class JournalEntry {
+    - date: Date
+    - calendarName: String
+    - eventTitle: String
+    - eventNote: String?
+    - subEntries: List<SubTaskEntry>
+    __
+    + format(): String
+    + toMarkdown(): String
+    }
+
+    class SubTaskEntry {
+    - title: String
+    - note: String?
+    - logs: List<FormattedLog>
+    __
+    + format(): String
+    }
+
+    class FormattedLog {
+    - label: String
+    - formattedValue: String
+    __
+    + toString(): String
+    }
+
+    class Journal {
+    - entries: List<JournalEntry>
+    - calendarNames: List<String>
+    - dateRange: DateRange
+    __
+    + filterByCalendar(calendarName: String): Journal
+    + filterByDateRange(dateRange: DateRange): Journal
+    + toMarkdown(): String
+    + toHTML(): String
+    + toPDF(): byte[]
+    }
+
+    class DateRange {
+    - startDate: Date
+    - endDate: Date
+    __
+    + contains(date: Date): boolean
+    + overlaps(other: DateRange): boolean
+    + getDays(): List<Date>
+    }
+
+    ' ============================================
+    ' SERVICES / APPLICATION LAYER
+    ' ============================================
+
+    class EventService {
+    - eventRepository: EventRepository
+    - calendarRepository: CalendarRepository
+    __
+    + createEvent(calendarId: UUID, title: String, date: Date): Event
+    + updateEvent(eventId: UUID, updates: EventUpdate): Event
+    + completeEvent(eventId: UUID): Event
+    + deleteEvent(eventId: UUID): void
+    + addSubTask(eventId: UUID, title: String): Event
+    + applyTemplate(calendarId: UUID, templateId: UUID, date: Date): Event
+    }
+
+    class TemplateService {
+    - templateRepository: TemplateRepository
+    - eventService: EventService
+    __
+    + createTemplate(userId: UUID, title: String): Template
+    + updateTemplate(templateId: UUID, updates: TemplateUpdate): Template
+    + deleteTemplate(templateId: UUID): void
+    + addChildTemplate(templateId: UUID, title: String): Template
+    + applyTemplate(templateId: UUID, calendarId: UUID, date: Date): Event
+    }
+
+    class JournalService {
+    - eventRepository: EventRepository
+    - calendarRepository: CalendarRepository
+    __
+    + generateJournal(userId: UUID, calendarIds: List<UUID>, dateRange: DateRange): Journal
+    + exportJournalAsMarkdown(journalId: UUID): String
+    + exportJournalAsPDF(journalId: UUID): byte[]
+    }
+
+    class CalendarService {
+    - calendarRepository: CalendarRepository
+    - eventRepository: EventRepository
+    __
+    + createCalendar(userId: UUID, name: String, color: String): Calendar
+    + updateCalendar(calendarId: UUID, updates: CalendarUpdate): Calendar
+    + deleteCalendar(calendarId: UUID): void
+    + toggleVisibility(calendarId: UUID): Calendar
+    + listCalendars(userId: UUID): List<Calendar>
+    }
+
+    ' ============================================
+    ' REPOSITORIES
+    ' ============================================
+
+    interface UserRepository {
+    + findById(id: UUID): User?
+    + findByEmail(email: String): User?
+    + save(user: User): User
+    + delete(userId: UUID): void
+    }
+
+    interface CalendarRepository {
+    + findById(id: UUID): Calendar?
+    + findByUserId(userId: UUID): List<Calendar>
+    + save(calendar: Calendar): Calendar
+    + delete(calendarId: UUID): void
+    }
+
+    interface EventRepository {
+    + findById(id: UUID): Event?
+    + findByCalendarId(calendarId: UUID): List<Event>
+    + findByCalendarIdAndDateRange(calendarId: UUID, dateRange: DateRange): List<Event>
+    + findByParentEventId(parentEventId: UUID): List<Event>
+    + save(event: Event): Event
+    + delete(eventId: UUID): void
+    }
+
+    interface TemplateRepository {
+    + findById(id: UUID): Template?
+    + findByUserId(userId: UUID): List<Template>
+    + findByParentTemplateId(parentTemplateId: UUID): List<Template>
+    + save(template: Template): Template
+    + delete(templateId: UUID): void
+    }
+
+    interface LogRepository {
+    + findById(id: UUID): Log?
+    + findByEventId(eventId: UUID): List<Log>
+    + findByTemplateId(templateId: UUID): List<Log>
+    + save(log: Log): Log
+    + delete(logId: UUID): void
+    }
+
+    ' ============================================
+    ' RELATIONSHIPS
+    ' ============================================
+
+    ' Composition relationships
+    User "1" *-- "0..*" Calendar : owns
+    User "1" *-- "0..*" Template : creates
+
+    Calendar "1" *-- "0..*" Event : contains
+
+    Event "1" o-- "0..*" Event : parent/child
+    Event "1" *-- "0..*" Log : has
+
+    Template "1" o-- "0..*" Template : parent/child
+    Template "1" *-- "0..*" Log : defines
+
+    ' Service dependencies
+    EventService ..> EventRepository : uses
+    EventService ..> CalendarRepository : uses
+    TemplateService ..> TemplateRepository : uses
+    TemplateService ..> EventService : uses
+    JournalService ..> EventRepository : uses
+    JournalService ..> CalendarRepository : uses
+    CalendarService ..> CalendarRepository : uses
+    CalendarService ..> EventRepository : uses
+
+    ' Domain relationships
+    Event ..> JournalEntry : generates
+    Event ..> Log : contains
+    Template ..> Event : instantiates
+    Log --> LogType : has
+    JournalEntry *-- SubTaskEntry : contains
+    SubTaskEntry *-- FormattedLog : contains
+    Journal *-- JournalEntry : contains
+    Journal --> DateRange : filters by
+
+    ' Notes
+    note right of Event
+    **Event Hierarchy Rules:**
+    • Top-level: parent_id = null, must have date & isCompleted
+    • Sub-task: parent_id != null, inherits calendar & date
+    • One optional note per event
+    • Zero or more logs for structured data
+    end note
+
+    note right of Template
+    **Template Application:**
+    • Templates are structure-only (no dates)
+    • Applying creates fully detached Event instances
+    • Editing template never affects past events
+    end note
+
+    note right of Log
+    **Log Types:**
+    • TEXT: Free-form text
+    • NUMBER: Numeric value with optional units
+    • DURATION: Time periods
+    • TABLE: Structured tabular data
+    • CHECKBOX: Boolean or list of items
+    
+    **Belongs to Event XOR Template**
+    end note
+
+    note right of Journal
+    **Journal Generation:**
+    • Derived view, not stored
+    • Filters out empty/null fields
+    • Includes event & sub-task notes
+    • Formats structured data readably
+    • Export formats: Markdown, HTML, PDF
+    end note
+
+    @enduml
