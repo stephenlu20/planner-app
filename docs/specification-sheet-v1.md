@@ -247,16 +247,3 @@ This application is designed as a **truthful record of intention and action**, b
 - Template versioning or bulk updates
 
 ---
-
-## Success Criteria (V1)
-
-- Users can plan both simple and complex activities without friction
-- Journals feel useful and reflective, not overwhelming
-- Data entered in V1 supports analytics in later versions
-- The system is understandable without diagrams
-
----
-
-## Summary
-
-This application is designed as a **truthful record of intention and action**, balancing planning, execution, and reflection without forcing users into rigid patterns.
