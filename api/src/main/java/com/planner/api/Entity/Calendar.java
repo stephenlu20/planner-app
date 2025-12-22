@@ -75,4 +75,8 @@ public class Calendar {
     public void removeEvent(Event event) {
         events.remove(event);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
