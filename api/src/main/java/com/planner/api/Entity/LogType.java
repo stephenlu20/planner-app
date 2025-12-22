@@ -1,4 +1,4 @@
-package com.planner.api.Entity;
+package com.planner.api.entity;
 
 public enum LogType {
     TEXT,
