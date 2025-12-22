@@ -64,5 +64,9 @@ public class User {
     public void removeTemplate(Template template) {
         templates.remove(template);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
 
