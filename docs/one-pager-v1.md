@@ -1,4 +1,4 @@
-# Planner App – V1 One-Pager
+# One-Pager (V1)
 
 ## Product Vision
 Create a personal planning system that combines calendars, events, structured tracking, and journaling into a single coherent experience. The app allows users to plan activities, capture structured data while doing them, and automatically generate meaningful journal entries from real actions.

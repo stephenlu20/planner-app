@@ -1,4 +1,4 @@
-# Application Specification Sheet (V1)
+# Specification Sheet (V1)
 
 ## Product Name
 

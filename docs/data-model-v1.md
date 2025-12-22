@@ -1,4 +1,4 @@
-# V1 Data Model
+# Data Model (V1)
 
 ## Overview
 
