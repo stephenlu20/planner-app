@@ -40,28 +40,28 @@ public class Log {
     @Column(name = "value")
     private Map<String, String> metadata;
 
-    private int index;
+    private int position;
 
     @Embedded
     private AuditFields audit;
 
     // Convenience constructor for event logs
-    public Log(Event event, LogType type, String label, String value, int index) {
+    public Log(Event event, LogType type, String label, String value, int position) {
         this.event = event;
         this.type = type;
         this.label = label;
         this.value = value;
-        this.index = index;
+        this.position = position;
         this.audit = new AuditFields();
     }
 
     // Convenience constructor for template logs
-    public Log(Template template, LogType type, String label, String value, int index) {
+    public Log(Template template, LogType type, String label, String value, int position) {
         this.template = template;
         this.type = type;
         this.label = label;
         this.value = value;
-        this.index = index;
+        this.position = position;
         this.audit = new AuditFields();
     }
 

@@ -14,5 +14,5 @@ public class LogSummaryDTO {
     private LogType type;
     private String label;
     private String value;
-    private int index;
+    private int position;
 }

@@ -12,8 +12,8 @@ import java.util.UUID;
 @Repository
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
-    // Fetch all events for a calendar, ordered by index
-    List<Event> findByCalendarOrderByIndexAsc(Calendar calendar);
+    // Fetch all events for a calendar, ordered by position
+    List<Event> findByCalendarOrderByPositionAsc(Calendar calendar);
 
     // Fetch events for a calendar on a specific date
     List<Event> findByCalendarAndDate(Calendar calendar, LocalDate date);
@@ -22,8 +22,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByCalendarAndDateBetween(Calendar calendar, LocalDate start, LocalDate end);
 
     // Fetch all top-level events (no parent)
-    List<Event> findByCalendarAndParentEventIsNullOrderByIndexAsc(Calendar calendar);
+    List<Event> findByCalendarAndParentEventIsNullOrderByPositionAsc(Calendar calendar);
 
     // Fetch all child events of a given parent event
-    List<Event> findByParentEventOrderByIndexAsc(Event parentEvent);
+    List<Event> findByParentEventOrderByPositionAsc(Event parentEvent);
 }

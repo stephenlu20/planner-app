@@ -17,6 +17,6 @@ public class CalendarResponseDTO {
     private UUID id;
     private String name;
     private String color;
-    private int index;
+    private int position;
     private List<EventSummaryDTO> events;
 }

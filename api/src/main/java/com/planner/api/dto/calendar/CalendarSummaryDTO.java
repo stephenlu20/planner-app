@@ -15,5 +15,5 @@ public class CalendarSummaryDTO {
     private UUID id;
     private String name;
     private String color;
-    private int index;
+    private int position;
 }

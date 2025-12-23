@@ -12,9 +12,9 @@ import java.util.UUID;
 @Repository
 public interface LogRepository extends JpaRepository<Log, UUID> {
 
-    // Fetch all logs for a given template, ordered by index
-    List<Log> findByTemplateOrderByIndexAsc(Template template);
+    // Fetch all logs for a given template, ordered by position
+    List<Log> findByTemplateOrderByPositionAsc(Template template);
 
     // Fetch logs by type for a template (if LogType exists)
-    List<Log> findByTemplateAndTypeOrderByIndexAsc(Template template, LogType type);
+    List<Log> findByTemplateAndTypeOrderByPositionAsc(Template template, LogType type);
 }

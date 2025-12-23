@@ -17,7 +17,7 @@ public class LogMapper {
                 .type(log.getType())
                 .label(log.getLabel())
                 .value(log.getValue())
-                .index(log.getIndex())
+                .position(log.getPosition())
                 .eventId(log.getEvent() != null ? log.getEvent().getId() : null)
                 .templateId(log.getTemplate() != null ? log.getTemplate().getId() : null)
                 .build();
@@ -45,7 +45,7 @@ public class LogMapper {
                 requestDTO.getType(),
                 requestDTO.getLabel(),
                 requestDTO.getValue(),
-                requestDTO.getIndex()
+                requestDTO.getPosition()
         );
     }
 
@@ -60,7 +60,7 @@ public class LogMapper {
                 requestDTO.getType(),
                 requestDTO.getLabel(),
                 requestDTO.getValue(),
-                requestDTO.getIndex()
+                requestDTO.getPosition()
         );
     }
 }

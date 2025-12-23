@@ -20,7 +20,7 @@ public class EventResponseDTO {
     private LocalDate date;
     private boolean isCompleted;
     private String noteText;
-    private int index;
+    private int position;
 
     private UUID calendarId;
     private UUID parentEventId;

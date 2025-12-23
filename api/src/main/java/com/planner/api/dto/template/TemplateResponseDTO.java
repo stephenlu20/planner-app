@@ -17,7 +17,7 @@ public class TemplateResponseDTO {
     private UUID id;
     private String title;
     private String description;
-    private int index;
+    private int position;
 
     private UUID parentTemplateId; // optional
 

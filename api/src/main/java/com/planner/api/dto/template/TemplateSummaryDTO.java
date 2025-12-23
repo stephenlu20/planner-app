@@ -14,5 +14,5 @@ import java.util.UUID;
 public class TemplateSummaryDTO {
     private UUID id;
     private String title;
-    private int index;
+    private int position;
 }

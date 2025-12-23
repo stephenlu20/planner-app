@@ -14,7 +14,7 @@ public class LogResponseDTO {
     private LogType type;
     private String label;
     private String value;
-    private int index;
+    private int position;
 
     private UUID eventId;
     private UUID templateId;

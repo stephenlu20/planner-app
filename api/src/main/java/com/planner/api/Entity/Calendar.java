@@ -32,7 +32,7 @@ public class Calendar {
 
     //User-defined ordering.
     @Column(nullable = false)
-    private int index;
+    private int position;
 
     @Embedded
     private AuditFields auditFields = new AuditFields();
@@ -42,15 +42,15 @@ public class Calendar {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("index ASC")
+    @OrderBy("position ASC")
     private List<Event> events = new ArrayList<>();
 
     // Constructor
-    public Calendar(User user, String name, String color, int index) {
+    public Calendar(User user, String name, String color, int position) {
         this.user = user;
         this.name = name;
         this.color = color;
-        this.index = index;
+        this.position = position;
     }
 
     // Methods
@@ -62,8 +62,8 @@ public class Calendar {
         this.color = color;
     }
 
-    public void reorder(int newIndex) {
-        this.index = newIndex;
+    public void reorder(int newPosition) {
+        this.position = newPosition;
     }
 
     public Event createEvent(String title, LocalDate date) {

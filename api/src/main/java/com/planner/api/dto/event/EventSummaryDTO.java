@@ -17,5 +17,5 @@ public class EventSummaryDTO {
     private String title;
     private LocalDate date;
     private boolean isCompleted;
-    private int index;
+    private int position;
 }

@@ -34,7 +34,7 @@ public class Template {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("index ASC")
+    @OrderBy("position ASC")
     private List<Template> childTemplates = new ArrayList<>();
 
     @Column(nullable = false)
@@ -45,7 +45,7 @@ public class Template {
 
     // User can define ordering
     @Column(nullable = false)
-    private int index;
+    private int position;
 
     @Embedded
     private AuditFields auditFields = new AuditFields();
@@ -55,21 +55,21 @@ public class Template {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("index ASC")
+    @OrderBy("position ASC")
     private List<Log> logs = new ArrayList<>();
 
     // Constructors
-    public Template(User user, String title, int index) {
+    public Template(User user, String title, int position) {
         this.user = user;
         this.title = title;
-        this.index = index;
+        this.position = position;
     }
 
-    public Template(User user, Template parentTemplate, String title, int index) {
+    public Template(User user, Template parentTemplate, String title, int position) {
         this.user = user;
         this.parentTemplate = parentTemplate;
         this.title = title;
-        this.index = index;
+        this.position = position;
     }
 
     // Class Methods
@@ -81,8 +81,8 @@ public class Template {
         this.description = description;
     }
 
-    public void reorder(int newIndex) {
-        this.index = newIndex;
+    public void reorder(int newPosition) {
+        this.position = newPosition;
     }
 
     public Template addChildTemplate(String title) {

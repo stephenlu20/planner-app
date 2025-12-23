@@ -15,13 +15,13 @@ public class TemplateMapper {
                 .id(template.getId())
                 .title(template.getTitle())
                 .description(template.getDescription())
-                .index(template.getIndex())
+                .position(template.getPosition())
                 .parentTemplateId(template.getParentTemplate() != null ? template.getParentTemplate().getId() : null)
                 .childTemplates(template.getChildTemplates().stream()
                         .map(t -> TemplateSummaryDTO.builder()
                                 .id(t.getId())
                                 .title(t.getTitle())
-                                .index(t.getIndex())
+                                .position(t.getPosition())
                                 .build())
                         .collect(Collectors.toList()))
                 .logs(template.getLogs().stream()
@@ -29,7 +29,7 @@ public class TemplateMapper {
                                 .id(log.getId())
                                 .label(log.getLabel())
                                 .type(log.getType())
-                                .index(log.getIndex())
+                                .position(log.getPosition())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -41,19 +41,19 @@ public class TemplateMapper {
         return TemplateSummaryDTO.builder()
                 .id(template.getId())
                 .title(template.getTitle())
-                .index(template.getIndex())
+                .position(template.getPosition())
                 .build();
     }
 
     public static Template toEntity(TemplateRequestDTO requestDTO, com.planner.api.entity.User user, Template parentTemplate) {
         if (requestDTO == null) return null;
 
-        Template template = new Template(user, parentTemplate, requestDTO.getTitle(), requestDTO.getIndex());
+        Template template = new Template(user, parentTemplate, requestDTO.getTitle(), requestDTO.getPosition());
         template.updateDescription(requestDTO.getDescription());
         template.setUser(user);
         template.setTitle(requestDTO.getTitle());
         template.setDescription(requestDTO.getDescription());
-        template.setIndex(requestDTO.getIndex());
+        template.setPosition(requestDTO.getPosition());
         template.setParentTemplate(parentTemplate);
 
         return template;
@@ -64,7 +64,7 @@ public class TemplateMapper {
 
         template.setTitle(requestDTO.getTitle());
         template.setDescription(requestDTO.getDescription());
-        template.setIndex(requestDTO.getIndex());
+        template.setPosition(requestDTO.getPosition());
         template.setParentTemplate(parentTemplate);
     }
 }

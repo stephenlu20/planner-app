@@ -11,11 +11,11 @@ import java.util.UUID;
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, UUID> {
 
-    // Fetch all top-level templates for a user, ordered by index
-    List<Template> findByUserAndParentTemplateIsNullOrderByIndexAsc(User user);
+    // Fetch all top-level templates for a user, ordered by position
+    List<Template> findByUserAndParentTemplateIsNullOrderByPositionAsc(User user);
 
-    // Fetch all child templates of a parent template, ordered by index
-    List<Template> findByParentTemplateOrderByIndexAsc(Template parentTemplate);
+    // Fetch all child templates of a parent template, ordered by position
+    List<Template> findByParentTemplateOrderByPositionAsc(Template parentTemplate);
 
     // Check if a template exists by title for a specific user (top-level)
     boolean existsByUserAndParentTemplateIsNullAndTitle(User user, String title);

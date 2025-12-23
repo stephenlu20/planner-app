@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class CalendarRequestDTO {
     private String name;
     private String color;
-    private int index; // optional; could default to end of list
+    private int position; // optional; could default to end of list
 }

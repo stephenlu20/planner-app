@@ -16,7 +16,7 @@ public class EventRequestDTO {
     private String title;
     private LocalDate date;
     private String noteText;
-    private int index;
+    private int position;
 
     private UUID parentEventId; // optional
 }

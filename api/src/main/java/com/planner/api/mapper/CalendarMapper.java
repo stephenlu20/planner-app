@@ -17,12 +17,12 @@ public class CalendarMapper {
                 .id(calendar.getId())
                 .name(calendar.getName())
                 .color(calendar.getColor())
-                .index(calendar.getIndex())
+                .position(calendar.getPosition())
                 .events(calendar.getEvents().stream()
                         .map(event -> EventSummaryDTO.builder()
                                 .id(event.getId())
                                 .title(event.getTitle())
-                                .index(event.getIndex())
+                                .position(event.getPosition())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -35,7 +35,7 @@ public class CalendarMapper {
                 .id(calendar.getId())
                 .name(calendar.getName())
                 .color(calendar.getColor())
-                .index(calendar.getIndex())
+                .position(calendar.getPosition())
                 .build();
     }
 
@@ -46,7 +46,7 @@ public class CalendarMapper {
                 user,
                 requestDTO.getName(),
                 requestDTO.getColor(),
-                requestDTO.getIndex()
+                requestDTO.getPosition()
         );
     }
 
@@ -55,6 +55,6 @@ public class CalendarMapper {
 
         calendar.setName(requestDTO.getName());
         calendar.setColor(requestDTO.getColor());
-        calendar.reorder(requestDTO.getIndex());
+        calendar.reorder(requestDTO.getPosition());
     }
 }

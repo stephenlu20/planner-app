@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface CalendarRepository extends JpaRepository<Calendar, UUID> {
 
-    // Fetch all calendars for a given user, ordered by index
-    List<Calendar> findByUserOrderByIndexAsc(User user);
+    // Fetch all calendars for a given user, ordered by position
+    List<Calendar> findByUserOrderByPositionAsc(User user);
 }

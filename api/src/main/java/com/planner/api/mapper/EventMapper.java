@@ -16,7 +16,7 @@ public class EventMapper {
                 .title(event.getTitle())
                 .date(event.getDate())
                 .isCompleted(event.isCompleted())
-                .index(event.getIndex())
+                .position(event.getPosition())
                 .build();
     }
 
@@ -29,7 +29,7 @@ public class EventMapper {
                 .date(event.getDate())
                 .isCompleted(event.isCompleted())
                 .noteText(event.getNoteText())
-                .index(event.getIndex())
+                .position(event.getPosition())
                 .calendarId(event.getCalendar().getId())
                 .parentEventId(
                         event.getParentEvent() != null
@@ -44,7 +44,7 @@ public class EventMapper {
                                 .id(log.getId())
                                 .label(log.getLabel())
                                 .type(log.getType())
-                                .index(log.getIndex())
+                                .position(log.getPosition())
                                 .build())
                         .collect(Collectors.toList()))
                 .build();
@@ -65,14 +65,14 @@ public class EventMapper {
                     parentEvent,
                     requestDTO.getTitle(),
                     requestDTO.getDate(),
-                    requestDTO.getIndex()
+                    requestDTO.getPosition()
             );
         } else {
             event = new Event(
                     calendar,
                     requestDTO.getTitle(),
                     requestDTO.getDate(),
-                    requestDTO.getIndex()
+                    requestDTO.getPosition()
             );
         }
 
@@ -86,6 +86,6 @@ public class EventMapper {
         event.updateTitle(requestDTO.getTitle());
         event.updateDate(requestDTO.getDate());
         event.updateNote(requestDTO.getNoteText());
-        event.reorder(requestDTO.getIndex());
+        event.reorder(requestDTO.getPosition());
     }
 }

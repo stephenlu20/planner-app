@@ -35,7 +35,7 @@ public class Event {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("index ASC")
+    @OrderBy("position ASC")
     private List<Event> subTasks = new ArrayList<>();
 
     @Column(nullable = false)
@@ -54,7 +54,7 @@ public class Event {
 
     // Ording in calendar or sub-events
     @Column(nullable = false)
-    private int index;
+    private int position;
 
     @Column
     private LocalDateTime completedAt;
@@ -67,32 +67,32 @@ public class Event {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @OrderBy("index ASC")
+    @OrderBy("position ASC")
     private List<Log> logs = new ArrayList<>();
 
     // Constructor
-    public Event(Calendar calendar, String title, LocalDate date, int index) {
+    public Event(Calendar calendar, String title, LocalDate date, int position) {
         this.calendar = calendar;
         this.title = title;
         this.date = date;
-        this.index = index;
+        this.position = position;
         this.isCompleted = false;
     }
 
-    public Event(Calendar calendar, Event parentEvent, String title, LocalDate date, int index) {
+    public Event(Calendar calendar, Event parentEvent, String title, LocalDate date, int position) {
         this.calendar = calendar;
         this.parentEvent = parentEvent;
         this.title = title;
         this.date = date;
-        this.index = index;
+        this.position = position;
     }
 
     // Sub task constructor
-    private Event(Event parentEvent, String title, int index) {
+    private Event(Event parentEvent, String title, int position) {
         this.parentEvent = parentEvent;
         this.calendar = parentEvent.calendar;
         this.title = title;
-        this.index = index;
+        this.position = position;
     }
 
     // Class methods
@@ -154,7 +154,7 @@ public class Event {
             subTasks.stream()
                     .filter(e -> e.id.equals(id))
                     .findFirst()
-                    .ifPresent(e -> e.index = idx);
+                    .ifPresent(e -> e.position = idx);
         }
     }
 
@@ -176,7 +176,7 @@ public class Event {
         this.date = date;
     }
 
-    public void reorder(int newIndex) {
-        this.index = newIndex;
+    public void reorder(int newPosition) {
+        this.position = newPosition;
     }
 }
