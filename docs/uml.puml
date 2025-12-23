@@ -31,14 +31,14 @@
     - userId: UUID
     - name: String
     - color: String
-    - index: int
+    - position: int
     - createdAt: DateTime
     - updatedAt: DateTime
     - events: List<Event>
     __
     + rename(name: String): void
     + setColor(color: String): void
-    + reorder(index: int): void
+    + reorder(position: int): void
     + createEvent(title: String, date: Date): Event
     + getEvent(id: UUID): Event
     + listEvents(dateRange: DateRange): List<Event>
@@ -56,7 +56,7 @@
     - date: Date?
     - isCompleted: boolean?
     - noteText: String?
-    - index: int
+    - position: int
     - createdAt: DateTime
     - updatedAt: DateTime
     - completedAt: DateTime?
@@ -74,7 +74,7 @@
     + getSubTask(id: UUID): Event
     + listSubTasks(): List<Event>
     + deleteSubTask(subTaskId: UUID): void
-    + reorderSubTasks(indexes: Map<UUID, int>): void
+    + reorderSubTasks(positiones: Map<UUID, int>): void
     + addLog(type: LogType, label: String, value: Any): Log
     + deleteLog(logId: UUID): void
     + isTopLevel(): boolean
@@ -88,7 +88,7 @@
     - parentTemplateId: UUID?
     - title: String
     - description: String
-    - index: int
+    - position: int
     - createdAt: DateTime
     - updatedAt: DateTime
     - childTemplates: List<Template>
@@ -96,12 +96,12 @@
     __
     + updateTitle(title: String): void
     + updateDescription(description: String): void
-    + reorder(index: int): void
+    + reorder(position: int): void
     + addChildTemplate(title: String): Template
     + getChildTemplate(id: UUID): Template
     + listChildTemplates(): List<Template>
     + deleteChildTemplate(childId: UUID): void
-    + reorderChildren(indexes: Map<UUID, int>): void
+    + reorderChildren(positiones: Map<UUID, int>): void
     + addLog(type: LogType, label: String, defaultValue: Any): Log
     + deleteLog(logId: UUID): void
     + apply(calendar: Calendar, date: Date): Event
@@ -116,13 +116,13 @@
     - type: LogType
     - label: String
     - value: Any
-    - index: int
+    - position: int
     - createdAt: DateTime
     - updatedAt: DateTime
     __
     + updateLabel(label: String): void
     + updateValue(value: Any): void
-    + reorder(index: int): void
+    + reorder(position: int): void
     + formatForJournal(): String
     }
 
