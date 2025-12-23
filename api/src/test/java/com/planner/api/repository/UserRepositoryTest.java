@@ -27,7 +27,6 @@ class UserRepositoryTest {
         User user = User.builder()
                 .name("Test User")
                 .build();
-        userRepository.save(user);
 
         // when
         User savedUser = userRepository.save(user);
