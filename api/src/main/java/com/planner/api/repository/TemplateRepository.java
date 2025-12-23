@@ -17,7 +17,7 @@ public interface TemplateRepository extends JpaRepository<Template, UUID> {
     // Fetch all child templates of a parent template, ordered by index
     List<Template> findByParentTemplateOrderByIndexAsc(Template parentTemplate);
 
-    // Optional: check if a template exists by title for a specific user (top-level)
+    // Check if a template exists by title for a specific user (top-level)
     boolean existsByUserAndParentTemplateIsNullAndTitle(User user, String title);
 }
 
