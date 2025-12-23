@@ -1,8 +1,10 @@
 package com.planner.api.mapper;
 
 import com.planner.api.dto.event.*;
+import com.planner.api.dto.log.LogSummaryDTO;
 import com.planner.api.entity.Event;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventMapper {
@@ -14,7 +16,7 @@ public class EventMapper {
                 .id(event.getId())
                 .title(event.getTitle())
                 .date(event.getDate())
-                .completed(event.isCompleted())
+                .isCompleted(event.isCompleted())
                 .index(event.getIndex())
                 .build();
     }
@@ -26,7 +28,7 @@ public class EventMapper {
                 .id(event.getId())
                 .title(event.getTitle())
                 .date(event.getDate())
-                .completed(event.isCompleted())
+                .isCompleted(event.isCompleted())
                 .noteText(event.getNoteText())
                 .index(event.getIndex())
                 .calendarId(event.getCalendar().getId())

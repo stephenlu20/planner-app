@@ -1,5 +1,6 @@
 package com.planner.api.dto.calendar;
 
+import com.planner.api.dto.event.EventSummaryDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

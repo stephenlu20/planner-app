@@ -47,7 +47,7 @@ public class Event {
 
     // nullable for sub-events
     @Column
-    private Boolean isCompleted;
+    private Boolean isCompleted = false;
 
     @Column(columnDefinition = "TEXT")
     private String noteText;

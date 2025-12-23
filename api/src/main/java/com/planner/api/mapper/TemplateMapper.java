@@ -1,6 +1,6 @@
 package com.planner.api.mapper;
 
-import com.planner.api.dto.*;
+import com.planner.api.dto.log.LogSummaryDTO;
 import com.planner.api.entity.Template;
 import com.planner.api.dto.template.*;
 

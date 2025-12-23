@@ -16,6 +16,6 @@ public class EventSummaryDTO {
     private UUID id;
     private String title;
     private LocalDate date;
-    private boolean completed;
+    private boolean isCompleted;
     private int index;
 }
