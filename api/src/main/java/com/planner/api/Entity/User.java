@@ -43,7 +43,7 @@ public class User {
         this.name = name;
     }
 
-    // ---------- Domain Methods ----------
+    // Methods
 
     public Calendar createCalendar(String name, String color) {
         Calendar calendar = new Calendar(this, name, color, calendars.size());
