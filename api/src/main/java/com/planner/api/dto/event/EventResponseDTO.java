@@ -17,7 +17,7 @@ public class EventResponseDTO {
     private UUID id;
     private String title;
     private LocalDate date;
-    private boolean completed;
+    private boolean isCompleted;
     private String noteText;
     private int index;
 
