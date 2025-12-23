@@ -11,7 +11,9 @@ import java.util.UUID;
 @Table(name = "templates")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // required by JPA
+@AllArgsConstructor(access = AccessLevel.PRIVATE)  // required by @Builder
+@Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Template {
 
@@ -24,7 +26,6 @@ public class Template {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Able to define template hierarchy (aka, template can have a template)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_template_id")
     private Template parentTemplate;
@@ -35,6 +36,7 @@ public class Template {
             orphanRemoval = true
     )
     @OrderBy("position ASC")
+    @Builder.Default
     private List<Template> childTemplates = new ArrayList<>();
 
     @Column(nullable = false)
@@ -43,11 +45,11 @@ public class Template {
     @Column
     private String description;
 
-    // User can define ordering
     @Column(nullable = false)
     private int position;
 
     @Embedded
+    @Builder.Default
     private AuditFields auditFields = new AuditFields();
 
     @OneToMany(
@@ -56,9 +58,10 @@ public class Template {
             orphanRemoval = true
     )
     @OrderBy("position ASC")
+    @Builder.Default
     private List<Log> logs = new ArrayList<>();
 
-    // Constructors
+    // Convenience constructors (optional, for legacy code)
     public Template(User user, String title, int position) {
         this.user = user;
         this.title = title;
@@ -108,4 +111,3 @@ public class Template {
         return parentTemplate != null;
     }
 }
-

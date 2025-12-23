@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
 class CalendarRepositoryTest {
 
@@ -28,7 +28,10 @@ class CalendarRepositoryTest {
     @DisplayName("Should save and retrieve calendars for a user ordered by position")
     void shouldFindCalendarsByUserOrderedByPosition() {
         // Arrange
-        User user = userRepository.save(new User("Stephen"));
+        User user = User.builder()
+                .name("Test User")
+                .build();
+        userRepository.save(user);
 
         Calendar calendar1 = new Calendar(user, "Work", "blue", 1);
         Calendar calendar2 = new Calendar(user, "Personal", "green", 0);
@@ -50,7 +53,10 @@ class CalendarRepositoryTest {
     @DisplayName("Should return empty list when user has no calendars")
     void shouldReturnEmptyListWhenNoCalendarsExist() {
         // Arrange
-        User user = userRepository.save(new User("Empty User"));
+        User user = User.builder()
+                .name("Test User")
+                .build();
+        userRepository.save(user);
 
         // Act
         List<Calendar> calendars =

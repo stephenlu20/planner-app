@@ -24,7 +24,10 @@ class UserRepositoryTest {
     @Test
     void shouldSaveAndFindUserById() {
         // given
-        User user = new User("Test User");
+        User user = User.builder()
+                .name("Test User")
+                .build();
+        userRepository.save(user);
 
         // when
         User savedUser = userRepository.save(user);
@@ -39,8 +42,12 @@ class UserRepositoryTest {
     @Test
     void shouldReturnAllUsers() {
         // given
-        userRepository.save(new User("User One"));
-        userRepository.save(new User("User Two"));
+        userRepository.save(User.builder()
+                .name("User 1")
+                .build());
+        userRepository.save(User.builder()
+                .name("User 2")
+                .build());
 
         // when
         List<User> users = userRepository.findAll();
@@ -52,7 +59,10 @@ class UserRepositoryTest {
     @Test
     void shouldDeleteUserById() {
         // given
-        User user = userRepository.save(new User("Delete Me"));
+        User user = User.builder()
+                .name("Test User")
+                .build();
+        userRepository.save(user);
         UUID userId = user.getId();
 
         // when

@@ -10,7 +10,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "users")
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA requires at least protected
+@AllArgsConstructor(access = AccessLevel.PRIVATE)  // required for @Builder
+@Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
@@ -23,6 +25,7 @@ public class User {
     private String name;
 
     @Embedded
+    @Builder.Default
     private AuditFields audit = new AuditFields();
 
     @OneToMany(
@@ -30,6 +33,7 @@ public class User {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @Builder.Default
     private List<Calendar> calendars = new ArrayList<>();
 
     @OneToMany(
@@ -37,8 +41,10 @@ public class User {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
+    @Builder.Default
     private List<Template> templates = new ArrayList<>();
 
+    // constructor
     public User(String name) {
         this.name = name;
     }
@@ -69,4 +75,3 @@ public class User {
         this.name = name;
     }
 }
-
