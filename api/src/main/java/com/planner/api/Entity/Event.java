@@ -79,6 +79,14 @@ public class Event {
         this.isCompleted = false;
     }
 
+    public Event(Calendar calendar, Event parentEvent, String title, LocalDate date, int index) {
+        this.calendar = calendar;
+        this.parentEvent = parentEvent;
+        this.title = title;
+        this.date = date;
+        this.index = index;
+    }
+
     // Sub task constructor
     private Event(Event parentEvent, String title, int index) {
         this.parentEvent = parentEvent;
@@ -90,6 +98,10 @@ public class Event {
     // Class methods
     public void updateTitle(String title) {
         this.title = title;
+    }
+
+    public boolean isCompleted() {
+        return isCompleted;
     }
 
     public void setDate(LocalDate date) {
@@ -158,5 +170,13 @@ public class Event {
         if (isSubTask()) {
             throw new IllegalStateException("Operation only allowed on top-level events");
         }
+    }
+
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void reorder(int newIndex) {
+        this.index = newIndex;
     }
 }
