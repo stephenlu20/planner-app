@@ -3,7 +3,7 @@ package com.planner.api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -66,7 +66,7 @@ public class Calendar {
         this.position = newPosition;
     }
 
-    public Event createEvent(String title, LocalDate date) {
+    public Event createEvent(String title, Instant date) {
         Event event = new Event(this, title, date, events.size());
         events.add(event);
         return event;

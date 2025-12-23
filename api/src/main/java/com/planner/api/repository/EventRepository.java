@@ -5,7 +5,7 @@ import com.planner.api.entity.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,10 +16,10 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByCalendarOrderByPositionAsc(Calendar calendar);
 
     // Fetch events for a calendar on a specific date
-    List<Event> findByCalendarAndDate(Calendar calendar, LocalDate date);
+    List<Event> findByCalendarAndDate(Calendar calendar, Instant date);
 
     // Fetch events for a calendar in a date range
-    List<Event> findByCalendarAndDateBetween(Calendar calendar, LocalDate start, LocalDate end);
+    List<Event> findByCalendarAndDateBetween(Calendar calendar, Instant start, Instant end);
 
     // Fetch all top-level events (no parent)
     List<Event> findByCalendarAndParentEventIsNullOrderByPositionAsc(Calendar calendar);

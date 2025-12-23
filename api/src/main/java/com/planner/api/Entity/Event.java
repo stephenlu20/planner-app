@@ -3,8 +3,7 @@ package com.planner.api.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,7 +42,7 @@ public class Event {
 
     // For events at the top of the hierarchy
     @Column
-    private LocalDate date;
+    private Instant date;
 
     // nullable for sub-events
     @Column
@@ -57,7 +56,7 @@ public class Event {
     private int position;
 
     @Column
-    private LocalDateTime completedAt;
+    private Instant completedAt;
 
     @Embedded
     private AuditFields auditFields = new AuditFields();
@@ -71,7 +70,7 @@ public class Event {
     private List<Log> logs = new ArrayList<>();
 
     // Constructor
-    public Event(Calendar calendar, String title, LocalDate date, int position) {
+    public Event(Calendar calendar, String title, Instant date, int position) {
         this.calendar = calendar;
         this.title = title;
         this.date = date;
@@ -79,7 +78,7 @@ public class Event {
         this.isCompleted = false;
     }
 
-    public Event(Calendar calendar, Event parentEvent, String title, LocalDate date, int position) {
+    public Event(Calendar calendar, Event parentEvent, String title, Instant date, int position) {
         this.calendar = calendar;
         this.parentEvent = parentEvent;
         this.title = title;
@@ -104,7 +103,7 @@ public class Event {
         return isCompleted;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Instant date) {
         assertTopLevel();
         this.date = date;
     }
@@ -112,7 +111,7 @@ public class Event {
     public void complete() {
         assertTopLevel();
         this.isCompleted = true;
-        this.completedAt = LocalDateTime.now();
+        this.completedAt = Instant.now();
     }
 
     public void uncomplete() {
@@ -172,7 +171,7 @@ public class Event {
         }
     }
 
-    public void updateDate(LocalDate date) {
+    public void updateDate(Instant date) {
         this.date = date;
     }
 
