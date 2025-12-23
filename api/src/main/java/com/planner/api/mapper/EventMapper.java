@@ -4,7 +4,6 @@ import com.planner.api.dto.event.*;
 import com.planner.api.dto.log.LogSummaryDTO;
 import com.planner.api.entity.Event;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventMapper {
