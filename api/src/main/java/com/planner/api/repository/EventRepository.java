@@ -26,4 +26,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     // Fetch all child events of a given parent event
     List<Event> findByParentEventOrderByPositionAsc(Event parentEvent);
+
+    List<Event> findByCalendarAndDateGreaterThanEqualAndDateLessThan(Calendar calendar, Instant start, Instant end
+);
 }

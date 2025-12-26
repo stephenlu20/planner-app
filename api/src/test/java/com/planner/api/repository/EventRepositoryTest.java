@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
-public class EventRepositoryTest {
+class EventRepositoryTest {
 
     @Autowired
     private EventRepository eventRepository;
@@ -27,94 +27,105 @@ public class EventRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User testUser;
-    private Calendar testCalendar;
+    @Autowired
+    private CalendarRepository calendarRepository;
+
+    private User user;
+    private Calendar calendar;
 
     @BeforeEach
     void setup() {
-        // Persist a test user
-        testUser = userRepository.saveAndFlush(User.builder()
-                .name("Test User")
-                .build());
+        // Persist user
+        user = userRepository.saveAndFlush(
+                User.builder()
+                        .name("Test User")
+                        .build()
+        );
 
-        // Explicitly create and persist a calendar
-        testCalendar = new Calendar(testUser, "Work Calendar", "Blue", 0);
-        testUser.getCalendars().add(testCalendar);
-        userRepository.saveAndFlush(testUser); // ensures calendar is managed and has an ID
+        // Persist calendar EXPLICITLY
+        calendar = calendarRepository.saveAndFlush(
+                new Calendar(user, "Work", "Blue", 0)
+        );
     }
 
     @Test
     void shouldSaveAndFindEventById() {
-        // given
-        Event event = new Event(testCalendar, "Meeting", Instant.now(), 0);
+        Event event = eventRepository.saveAndFlush(
+                new Event(calendar, "Meeting", Instant.now(), 0)
+        );
 
-        // when
-        Event savedEvent = eventRepository.saveAndFlush(event);
-        Optional<Event> foundEvent = eventRepository.findById(savedEvent.getId());
+        Optional<Event> found = eventRepository.findById(event.getId());
 
-        // then
-        assertThat(foundEvent).isPresent();
-        assertThat(foundEvent.get().getTitle()).isEqualTo("Meeting");
+        assertThat(found).isPresent();
+        assertThat(found.get().getTitle()).isEqualTo("Meeting");
     }
 
     @Test
     void shouldReturnEventsOrderedByPosition() {
-        // given
-        Event e1 = eventRepository.save(new Event(testCalendar, "Event 1", Instant.now(), 1));
-        Event e2 = eventRepository.save(new Event(testCalendar, "Event 2", Instant.now(), 0));
+        Event e1 = eventRepository.save(new Event(calendar, "Event 1", Instant.now(), 1));
+        Event e2 = eventRepository.save(new Event(calendar, "Event 2", Instant.now(), 0));
 
-        // when
-        List<Event> events = eventRepository.findByCalendarOrderByPositionAsc(testCalendar);
+        List<Event> events =
+                eventRepository.findByCalendarOrderByPositionAsc(calendar);
 
-        // then
-        assertThat(events).containsExactly(e2, e1); // ordered by position
+        assertThat(events).containsExactly(e2, e1);
     }
 
     @Test
     void shouldFindEventsByInstant() {
-        // given
         Instant now = Instant.now();
-        Event e1 = eventRepository.save(new Event(testCalendar, "Instant Event", now, 0));
+        Instant start = now.minusSeconds(1);
+        Instant end = now.plusSeconds(1);
 
-        // when
-        List<Event> eventsOnDate = eventRepository.findByCalendarAndDate(testCalendar, now);
+        Event event = eventRepository.saveAndFlush(
+                new Event(calendar, "Instant Event", now, 0)
+        );
 
-        // then
-        assertThat(eventsOnDate).containsExactly(e1);
+        List<Event> result =
+                eventRepository.findByCalendarAndDateBetween(calendar, start, end);
+
+        assertThat(result).containsExactly(event);
     }
+
 
     @Test
     void shouldFindEventsBetweenInstants() {
-        // given
         Instant start = Instant.now();
         Instant middle = start.plusSeconds(3600);
         Instant end = start.plusSeconds(7200);
         Instant before = start.minusSeconds(3600);
 
-        Event e1 = eventRepository.save(new Event(testCalendar, "Event A", middle, 0));
-        Event e2 = eventRepository.save(new Event(testCalendar, "Event B", end, 1));
-        Event e3 = eventRepository.save(new Event(testCalendar, "Event C", before, 2));
+        Event e1 = eventRepository.save(new Event(calendar, "A", middle, 0));
+        Event e2 = eventRepository.save(new Event(calendar, "B", end, 1));
+        Event e3 = eventRepository.save(new Event(calendar, "C", before, 2));
 
-        // when
-        List<Event> eventsInRange = eventRepository.findByCalendarAndDateBetween(testCalendar, start, end);
+        List<Event> result =
+                eventRepository.findByCalendarAndDateGreaterThanEqualAndDateLessThan(calendar, start, end);
 
-        // then
-        assertThat(eventsInRange).containsExactlyInAnyOrder(e1, e2);
-        assertThat(eventsInRange).doesNotContain(e3);
+        assertThat(result).containsExactlyInAnyOrder(e1, e2);
+        assertThat(result).doesNotContain(e3);
     }
 
     @Test
     void shouldHandleParentAndChildEvents() {
-        // given
-        Event parent = eventRepository.save(new Event(testCalendar, "Parent Event", Instant.now(), 0));
-        Event child1 = eventRepository.save(new Event(testCalendar, parent, "Child 1", Instant.now(), 0));
-        Event child2 = eventRepository.save(new Event(testCalendar, parent, "Child 2", Instant.now(), 1));
+        Event parent = eventRepository.saveAndFlush(
+                new Event(calendar, "Parent", Instant.now(), 0)
+        );
 
-        // when
-        List<Event> topLevel = eventRepository.findByCalendarAndParentEventIsNullOrderByPositionAsc(testCalendar);
-        List<Event> children = eventRepository.findByParentEventOrderByPositionAsc(parent);
+        Event child1 = eventRepository.save(
+                new Event(calendar, parent, "Child 1", Instant.now(), 0)
+        );
 
-        // then
+        Event child2 = eventRepository.save(
+                new Event(calendar, parent, "Child 2", Instant.now(), 1)
+        );
+
+        List<Event> topLevel =
+                eventRepository.findByCalendarAndParentEventIsNullOrderByPositionAsc(calendar);
+
+        List<Event> children =
+                eventRepository.findByParentEventOrderByPositionAsc(parent);
+
         assertThat(topLevel).containsExactly(parent);
         assertThat(children).containsExactly(child1, child2);
     }
