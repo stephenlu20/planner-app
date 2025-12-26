@@ -2,6 +2,8 @@ package com.planner.api.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,7 +21,7 @@ public class Log {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = true)
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +40,8 @@ public class Log {
     @CollectionTable(name = "log_metadata", joinColumns = @JoinColumn(name = "log_id"))
     @MapKeyColumn(name = "key")
     @Column(name = "value")
-    private Map<String, String> metadata;
+    @Builder.Default
+    private Map<String, String> metadata = new HashMap<>();
 
     private int position;
 
@@ -53,6 +56,7 @@ public class Log {
         this.value = value;
         this.position = position;
         this.audit = new AuditFields();
+        this.metadata = new HashMap<>();
     }
 
     // Convenience constructor for template logs
@@ -63,6 +67,7 @@ public class Log {
         this.value = value;
         this.position = position;
         this.audit = new AuditFields();
+        this.metadata = new HashMap<>();
     }
 
 }

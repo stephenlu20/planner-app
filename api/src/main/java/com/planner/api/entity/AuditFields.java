@@ -14,19 +14,17 @@ import java.time.Instant;
 public class AuditFields {
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt;
+    private Instant createdAt = Instant.now();
 
     @Column(nullable = false)
-    private Instant updatedAt;
+    private Instant updatedAt = Instant.now();
 
-    @PrePersist
     protected void onCreate() {
         Instant now = Instant.now();
         this.createdAt = now;
         this.updatedAt = now;
     }
 
-    @PreUpdate
     protected void onUpdate() {
         this.updatedAt = Instant.now();
     }
