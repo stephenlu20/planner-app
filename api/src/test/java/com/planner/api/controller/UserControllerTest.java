@@ -41,7 +41,6 @@ class UserControllerTest {
     @Test
     void shouldCreateUpdateAndDeleteUser() throws Exception {
         // Create user
-        String createJson = "";
         mockMvc.perform(post("/users")
                         .param("username", "stephen")
                         .contentType(MediaType.APPLICATION_JSON))
