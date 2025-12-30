@@ -1,7 +1,9 @@
 package com.planner.api.service;
 
+import com.planner.api.entity.Calendar;
 import com.planner.api.entity.Event;
 import com.planner.api.entity.User;
+import com.planner.api.repository.CalendarRepository;
 import com.planner.api.repository.EventRepository;
 import com.planner.api.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -20,12 +22,17 @@ class EventServiceTest {
     private UserRepository userRepository;
 
     @Autowired
+    private CalendarRepository calendarRepository;
+
+    @Autowired
     private EventRepository eventRepository;
 
     @Test
     void shouldToggleCompletedStatus() {
         User user = userRepository.save(new User("stephen"));
-        Event event = eventRepository.save(new Event(user, "Test event", 1));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Default"));
+
+        Event event = eventRepository.save(new Event(user, calendar, "Test event", 1));
 
         assertThat(event.isCompleted()).isFalse();
 
@@ -37,11 +44,13 @@ class EventServiceTest {
     @Test
     void shouldCreateEvent() {
         User user = userRepository.save(new User("alice"));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Work"));
 
-        Event event = eventService.createEvent("Meeting", 1, user.getId());
+        Event event = eventService.createEvent("Meeting", 1, user.getId(), calendar.getId());
 
         assertThat(event.getNote()).isEqualTo("Meeting");
         assertThat(event.getOrderIndex()).isEqualTo(1);
         assertThat(event.getUser().getId()).isEqualTo(user.getId());
+        assertThat(event.getCalendar().getId()).isEqualTo(calendar.getId());
     }
 }

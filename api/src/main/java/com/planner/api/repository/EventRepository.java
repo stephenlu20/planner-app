@@ -12,4 +12,8 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     List<Event> findByUserOrderByOrderIndexAsc(User user);
 
     List<Event> findByUserAndCompleted(User user, boolean completed);
+
+    List<Event> findByCalendarIdOrderByOrderIndexAsc(UUID calendarId);
+
+    List<Event> findByCalendarIdAndCompleted(UUID calendarId, boolean completed);
 }

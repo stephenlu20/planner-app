@@ -27,8 +27,15 @@ public class EventController {
     @GetMapping("/user/{userId}")
     public List<EventResponseDTO> getEventsForUser(@PathVariable UUID userId) {
         User user = userService.getUser(userId);
-
         return eventService.getEventsForUser(user)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @GetMapping("/calendar/{calendarId}")
+    public List<EventResponseDTO> getEventsForCalendar(@PathVariable UUID calendarId) {
+        return eventService.getEventsForCalendar(calendarId)
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -39,19 +46,9 @@ public class EventController {
         return toDto(eventService.toggleCompleted(eventId));
     }
 
-    private EventResponseDTO toDto(Event event) {
-        return new EventResponseDTO(
-                event.getId(),
-                event.getNote(),
-                event.getOrderIndex(),
-                event.isCompleted(),
-                event.getUser().getId()
-        );
-    }
-
     @PutMapping("/reorder")
     public List<EventResponseDTO> reorderEvents(@RequestBody EventReorderRequestDTO request) {
-        List<Event> updated = eventService.reorderEvents(request.getUserId(), request.getOrderedEventIds());
+        List<Event> updated = eventService.reorderEventsForCalendar(request.getCalendarId(), request.getOrderedEventIds());
         return updated.stream().map(this::toDto).toList();
     }
 
@@ -60,7 +57,8 @@ public class EventController {
         Event event = eventService.createEvent(
                 request.getNote(),
                 request.getOrderIndex(),
-                request.getUserId()
+                request.getUserId(),
+                request.getCalendarId()
         );
         return toDto(event);
     }
@@ -68,5 +66,16 @@ public class EventController {
     @DeleteMapping("/{eventId}")
     public void deleteEvent(@PathVariable UUID eventId) {
         eventService.deleteEvent(eventId);
+    }
+
+    private EventResponseDTO toDto(Event event) {
+        return new EventResponseDTO(
+                event.getId(),
+                event.getNote(),
+                event.getOrderIndex(),
+                event.isCompleted(),
+                event.getUser().getId(),
+                event.getCalendar().getId()
+        );
     }
 }

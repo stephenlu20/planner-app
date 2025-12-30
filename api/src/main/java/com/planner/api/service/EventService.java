@@ -1,5 +1,6 @@
 package com.planner.api.service;
 
+import com.planner.api.entity.Calendar;
 import com.planner.api.entity.Event;
 import com.planner.api.entity.User;
 import com.planner.api.repository.EventRepository;
@@ -17,14 +18,20 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final UserService userService;
+    private final CalendarService calendarService;
 
-    public EventService(EventRepository eventRepository, UserService userService) {
+    public EventService(EventRepository eventRepository, UserService userService, CalendarService calendarService) {
         this.eventRepository = eventRepository;
         this.userService = userService;
+        this.calendarService = calendarService;
     }
 
     public List<Event> getEventsForUser(User user) {
         return eventRepository.findByUserOrderByOrderIndexAsc(user);
+    }
+
+    public List<Event> getEventsForCalendar(UUID calendarId) {
+        return eventRepository.findByCalendarIdOrderByOrderIndexAsc(calendarId);
     }
 
     public Event toggleCompleted(UUID eventId) {
@@ -35,15 +42,38 @@ public class EventService {
         return event;
     }
 
-    public Event createEvent(String note, int orderIndex, UUID userId) {
+    public Event createEvent(String note, int orderIndex, UUID userId, UUID calendarId) {
         User user = userService.getUser(userId);
-        Event event = new Event(user, note, orderIndex);
+        Calendar calendar = calendarService.getCalendar(calendarId);
+        Event event = new Event(user, calendar, note, orderIndex);
         return eventRepository.save(event);
     }
 
-    public List<Event> reorderEvents(UUID userId, List<UUID> orderedEventIds) {
+    public List<Event> reorderEventsForUser(UUID userId, List<UUID> orderedEventIds) {
         User user = userService.getUser(userId);
         List<Event> events = eventRepository.findByUserOrderByOrderIndexAsc(user);
+
+        if (events.size() != orderedEventIds.size()) {
+            throw new IllegalArgumentException("Mismatch in number of events");
+        }
+
+        Map<UUID, Event> eventMap = events.stream()
+                .collect(Collectors.toMap(Event::getId, e -> e));
+
+        for (int i = 0; i < orderedEventIds.size(); i++) {
+            UUID id = orderedEventIds.get(i);
+            Event e = eventMap.get(id);
+            if (e == null) {
+                throw new IllegalArgumentException("Invalid event ID: " + id);
+            }
+            e.setOrderIndex(i);
+        }
+
+        return eventRepository.saveAll(events);
+    }
+
+    public List<Event> reorderEventsForCalendar(UUID calendarId, List<UUID> orderedEventIds) {
+        List<Event> events = eventRepository.findByCalendarIdOrderByOrderIndexAsc(calendarId);
 
         if (events.size() != orderedEventIds.size()) {
             throw new IllegalArgumentException("Mismatch in number of events");

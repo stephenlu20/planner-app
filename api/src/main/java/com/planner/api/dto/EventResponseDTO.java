@@ -9,13 +9,15 @@ public class EventResponseDTO {
     private int orderIndex;
     private boolean completed;
     private UUID userId;
+    private UUID calendarId;
 
-    public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, UUID userId) {
+    public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, UUID userId, UUID calendarId) {
         this.id = id;
         this.note = note;
         this.orderIndex = orderIndex;
         this.completed = completed;
         this.userId = userId;
+        this.calendarId = calendarId;
     }
 
     public UUID getId() {
@@ -36,5 +38,9 @@ public class EventResponseDTO {
 
     public UUID getUserId() {
         return userId;
+    }
+
+    public UUID getCalendarId() {
+        return calendarId;
     }
 }

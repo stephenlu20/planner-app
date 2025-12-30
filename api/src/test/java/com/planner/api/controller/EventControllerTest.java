@@ -1,7 +1,9 @@
 package com.planner.api.controller;
 
+import com.planner.api.entity.Calendar;
 import com.planner.api.entity.Event;
 import com.planner.api.entity.User;
+import com.planner.api.repository.CalendarRepository;
 import com.planner.api.repository.EventRepository;
 import com.planner.api.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -31,12 +33,16 @@ class EventControllerTest {
     private UserRepository userRepository;
 
     @Autowired
+    private CalendarRepository calendarRepository;
+
+    @Autowired
     private EventRepository eventRepository;
 
     @Test
     void shouldToggleEventCompletion() throws Exception {
         User user = userRepository.save(new User("stephen"));
-        Event event = eventRepository.save(new Event(user, "Test", 1));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Default"));
+        Event event = eventRepository.save(new Event(user, calendar, "Test", 1));
 
         mockMvc.perform(
                 put("/events/" + event.getId() + "/toggle")
@@ -47,14 +53,16 @@ class EventControllerTest {
     @Test
     void shouldCreateEvent() throws Exception {
         User user = userRepository.save(new User("stephen"));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Default"));
 
         String json = """
             {
                 "note": "New Event",
                 "orderIndex": 1,
-                "userId": "%s"
+                "userId": "%s",
+                "calendarId": "%s"
             }
-            """.formatted(user.getId());
+            """.formatted(user.getId(), calendar.getId());
 
         mockMvc.perform(post("/events")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -65,18 +73,19 @@ class EventControllerTest {
     @Test
     void shouldReorderEvents() throws Exception {
         User user = userRepository.save(new User("stephen"));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Default"));
 
-        Event e1 = eventRepository.save(new Event(user, "First", 1));
-        Event e2 = eventRepository.save(new Event(user, "Second", 2));
-        Event e3 = eventRepository.save(new Event(user, "Third", 3));
+        Event e1 = eventRepository.save(new Event(user, calendar, "First", 1));
+        Event e2 = eventRepository.save(new Event(user, calendar, "Second", 2));
+        Event e3 = eventRepository.save(new Event(user, calendar, "Third", 3));
 
         String json = """
             {
-                "userId": "%s",
+                "calendarId": "%s",
                 "orderedEventIds": ["%s", "%s", "%s"]
             }
             """.formatted(
-                user.getId(),
+                calendar.getId(),
                 e3.getId(),
                 e1.getId(),
                 e2.getId()
@@ -87,8 +96,7 @@ class EventControllerTest {
                         .content(json))
                 .andExpect(status().isOk());
 
-        // fetch updated events and assert new order
-        List<Event> updated = eventRepository.findByUserOrderByOrderIndexAsc(user);
+        List<Event> updated = eventRepository.findByCalendarIdOrderByOrderIndexAsc(calendar.getId());
         assertThat(updated.get(0).getId()).isEqualTo(e3.getId());
         assertThat(updated.get(1).getId()).isEqualTo(e1.getId());
         assertThat(updated.get(2).getId()).isEqualTo(e2.getId());
@@ -97,11 +105,12 @@ class EventControllerTest {
     @Test
     void shouldDeleteEvent() throws Exception {
         User user = userRepository.save(new User("stephen"));
-        Event event = eventRepository.save(new Event(user, "To be deleted", 1));
+        Calendar calendar = calendarRepository.save(new Calendar(user, "Default"));
+        Event event = eventRepository.save(new Event(user, calendar, "To be deleted", 1));
 
         mockMvc.perform(delete("/events/" + event.getId())
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()); // or .isNoContent() depending on Spring version
+                .andExpect(status().isOk());
 
         boolean exists = eventRepository.existsById(event.getId());
         assertThat(exists).isFalse();

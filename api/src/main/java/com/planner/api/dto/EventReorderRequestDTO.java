@@ -5,20 +5,19 @@ import java.util.UUID;
 
 public class EventReorderRequestDTO {
 
-    private UUID userId;
+    private UUID calendarId;
     private List<UUID> orderedEventIds;
 
     public EventReorderRequestDTO() {
-        // default for JSON deserialization
     }
 
-    public EventReorderRequestDTO(UUID userId, List<UUID> orderedEventIds) {
-        this.userId = userId;
+    public EventReorderRequestDTO(UUID calendarId, List<UUID> orderedEventIds) {
+        this.calendarId = calendarId;
         this.orderedEventIds = orderedEventIds;
     }
 
-    public UUID getUserId() {
-        return userId;
+    public UUID getCalendarId() {
+        return calendarId;
     }
 
     public List<UUID> getOrderedEventIds() {

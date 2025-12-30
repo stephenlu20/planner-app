@@ -10,6 +10,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.planner.api.entity.User;
 import com.planner.api.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+
+import com.planner.api.repository.CalendarRepository;
 import com.planner.api.repository.EventRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -21,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 class UserControllerTest {
 
     @Autowired
@@ -31,9 +36,14 @@ class UserControllerTest {
 
     @Autowired
     private EventRepository eventRepository;
+    
+    @Autowired
+    private CalendarRepository calendarRepository;
 
     @BeforeEach
     void cleanUp() {
+        // delete dependent entities first
+        calendarRepository.deleteAll();
         eventRepository.deleteAll();
         userRepository.deleteAll();
     }

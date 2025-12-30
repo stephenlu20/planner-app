@@ -1,8 +1,11 @@
 package com.planner.api.service;
 
 import com.planner.api.entity.User;
+import com.planner.api.repository.CalendarRepository;
 import com.planner.api.repository.EventRepository;
 import com.planner.api.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 class UserServiceTest {
 
     @Autowired
@@ -23,8 +27,13 @@ class UserServiceTest {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private CalendarRepository calendarRepository;
+
     @BeforeEach
     void cleanUp() {
+        // delete dependent entities first
+        calendarRepository.deleteAll();
         eventRepository.deleteAll();
         userRepository.deleteAll();
     }

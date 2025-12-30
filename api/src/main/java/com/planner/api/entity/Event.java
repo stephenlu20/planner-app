@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,7 +30,10 @@ public class Event {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // Required by JPA
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "calendar_id")
+    private Calendar calendar;
+
     protected Event() {
     }
 
@@ -40,18 +42,21 @@ public class Event {
             String note,
             LocalDateTime dateTime,
             User user,
+            Calendar calendar,
             int orderIndex
     ) {
         this.title = title;
         this.note = note;
         this.dateTime = dateTime;
         this.user = user;
+        this.calendar = calendar;
         this.orderIndex = orderIndex;
         this.completed = false;
     }
 
-    public Event(User user, String note, int orderIndex) {
+    public Event(User user, Calendar calendar, String note, int orderIndex) {
         this.user = user;
+        this.calendar = calendar;
         this.note = note;
         this.orderIndex = orderIndex;
     }
@@ -102,5 +107,13 @@ public class Event {
 
     public User getUser() {
         return user;
+    }
+
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
     }
 }
