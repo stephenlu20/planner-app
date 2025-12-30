@@ -1,0 +1,72 @@
+package com.planner.api.controller;
+
+import com.planner.api.entity.Event;
+import com.planner.api.entity.User;
+import com.planner.api.dto.EventCreateRequestDTO;
+import com.planner.api.dto.EventReorderRequestDTO;
+import com.planner.api.dto.EventResponseDTO;
+import com.planner.api.service.EventService;
+import com.planner.api.service.UserService;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/events")
+public class EventController {
+
+    private final EventService eventService;
+    private final UserService userService;
+
+    public EventController(EventService eventService, UserService userService) {
+        this.eventService = eventService;
+        this.userService = userService;
+    }
+
+    @GetMapping("/user/{userId}")
+    public List<EventResponseDTO> getEventsForUser(@PathVariable UUID userId) {
+        User user = userService.getUser(userId);
+
+        return eventService.getEventsForUser(user)
+                .stream()
+                .map(this::toDto)
+                .toList();
+    }
+
+    @PutMapping("/{eventId}/toggle")
+    public EventResponseDTO toggleEventCompleted(@PathVariable UUID eventId) {
+        return toDto(eventService.toggleCompleted(eventId));
+    }
+
+    private EventResponseDTO toDto(Event event) {
+        return new EventResponseDTO(
+                event.getId(),
+                event.getNote(),
+                event.getOrderIndex(),
+                event.isCompleted(),
+                event.getUser().getId()
+        );
+    }
+
+    @PutMapping("/reorder")
+    public List<EventResponseDTO> reorderEvents(@RequestBody EventReorderRequestDTO request) {
+        List<Event> updated = eventService.reorderEvents(request.getUserId(), request.getOrderedEventIds());
+        return updated.stream().map(this::toDto).toList();
+    }
+
+    @PostMapping
+    public EventResponseDTO createEvent(@RequestBody EventCreateRequestDTO request) {
+        Event event = eventService.createEvent(
+                request.getNote(),
+                request.getOrderIndex(),
+                request.getUserId()
+        );
+        return toDto(event);
+    }
+
+    @DeleteMapping("/{eventId}")
+    public void deleteEvent(@PathVariable UUID eventId) {
+        eventService.deleteEvent(eventId);
+    }
+}
