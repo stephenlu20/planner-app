@@ -1,7 +1,10 @@
 package com.planner.api.service;
 
 import com.planner.api.entity.User;
+import com.planner.api.repository.EventRepository;
 import com.planner.api.repository.UserRepository;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +19,15 @@ class UserServiceTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
+
+    @BeforeEach
+    void cleanUp() {
+        eventRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Test
     void shouldCreateAndFetchUserByUsername() {
