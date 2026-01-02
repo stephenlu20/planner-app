@@ -2,6 +2,7 @@ import { useState } from "react";
 import TabButton from "./components/tabs/TabButton";
 import UserTester from "./components/testers/UserTester";
 import CalendarTester from "./components/testers/CalendarTester";
+import TemplateTester from "./components/testers/TemplateTester"
 import EventTester from "./components/testers/EventTester";
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
         return <UserTester />;
       case "Calendars":
         return <CalendarTester />;
+      case "Templates":
+        return <TemplateTester />;
       case "Events":
         return <EventTester />;
       default:
@@ -25,7 +28,7 @@ function App() {
       <h1 className="text-3xl font-bold mb-6">Planner API Tester</h1>
 
       <div className="flex space-x-2 border-b-2 mb-4">
-        {["Users", "Calendars", "Events"].map((tab) => (
+        {["Users", "Calendars", "Templates", "Events"].map((tab) => (
           <TabButton
             key={tab}
             label={tab}
