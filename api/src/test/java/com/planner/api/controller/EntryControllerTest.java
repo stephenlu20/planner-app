@@ -28,7 +28,7 @@ class EntryControllerTest {
     private UserService userService;
     private ObjectMapper objectMapper;
 
-    private UUID userId;
+    private Long userId;
     private User dummyUser;
 
     @BeforeEach
@@ -39,7 +39,7 @@ class EntryControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         objectMapper = new ObjectMapper();
 
-        userId = UUID.randomUUID();
+        userId = 1L;
         dummyUser = new User("Test User");
         dummyUser.setId(userId);
     }

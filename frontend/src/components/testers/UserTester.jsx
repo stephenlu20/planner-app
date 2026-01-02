@@ -1,89 +1,136 @@
 import { useState } from "react";
-import {
-  createUser,
-  getUserById,
-  getUserByUsername,
-  deleteUser
-} from "../../api/userApi";
+import { createUser, getUserById, getUserByUsername, deleteUser, getAllUsers } from "../../api/userApi";
 
 export default function UserTester() {
   const [username, setUsername] = useState("");
-  const [userId, setUserId] = useState("");
+  const [fetchById, setFetchById] = useState("");
+  const [fetchByName, setFetchByName] = useState("");
+  const [deleteId, setDeleteId] = useState("");
   const [result, setResult] = useState(null);
 
-  const handleCreate = async () => {
-    const res = await createUser(username);
-    setResult(res);
-  };
-
-  const handleFetchById = async () => {
-    const res = await getUserById(userId);
-    setResult(res);
-  };
-
-  const handleFetchByUsername = async () => {
-    const res = await getUserByUsername(username);
-    setResult(res);
-  };
-
-  const handleDelete = async () => {
-    await deleteUser(userId);
-    setResult({ deletedUserId: userId });
-  };
+  const buttonClasses =
+    "px-4 py-2 rounded font-medium transition transform active:scale-95 cursor-pointer";
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">User API</h2>
-
-      <input
-        className="border px-3 py-2 rounded w-96"
-        placeholder="Username"
-        value={username}
-        onChange={e => setUsername(e.target.value)}
-      />
-
-      <input
-        className="border px-3 py-2 rounded w-96"
-        placeholder="User ID"
-        value={userId}
-        onChange={e => setUserId(e.target.value)}
-      />
-
-      <div className="flex gap-2">
+    <div className="p-6 space-y-6">
+      <div className="space-y-2">
+        <h2 className="font-semibold">Create User</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="border px-2 py-1 rounded"
+        />
         <button
-          onClick={handleCreate}
-          className="bg-indigo-500 text-white px-4 py-2 rounded"
+          onClick={async () => {
+            try {
+              const res = await createUser(username);
+              setResult(res);
+            } catch (err) {
+              setResult({ error: err.response?.data || err.message });
+            }
+          }}
+          className={`${buttonClasses} bg-blue-600 text-white hover:bg-blue-700`}
         >
-          Create User
-        </button>
-
-        <button
-          onClick={handleFetchById}
-          className="bg-gray-600 text-white px-4 py-2 rounded"
-        >
-          Get By ID
-        </button>
-
-        <button
-          onClick={handleFetchByUsername}
-          className="bg-sky-600 text-white px-4 py-2 rounded"
-        >
-          Get By Username
-        </button>
-
-        <button
-          onClick={handleDelete}
-          className="bg-red-600 text-white px-4 py-2 rounded"
-        >
-          Delete User
+          Create
         </button>
       </div>
 
-      {result && (
-        <pre className="bg-slate-100 p-4 rounded text-sm">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      )}
+      <div className="space-y-2">
+        <h2 className="font-semibold">Get All Users</h2>
+        <button
+          onClick={async () => {
+            try {
+              const res = await getAllUsers();
+              setResult(res);
+            } catch (err) {
+              setResult({ error: err.response?.data || err.message });
+            }
+          }}
+          className={`${buttonClasses} bg-purple-600 text-white hover:bg-purple-700`}
+        >
+          Fetch All
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        <h2 className="font-semibold">Get User by ID</h2>
+        <input
+          type="text"
+          placeholder="User ID"
+          value={fetchById}
+          onChange={(e) => setFetchById(e.target.value)}
+          className="border px-2 py-1 rounded"
+        />
+        <button
+          onClick={async () => {
+            try {
+              const res = await getUserById(fetchById);
+              setResult(res);
+            } catch (err) {
+              setResult({ error: err.response?.data || err.message });
+            }
+          }}
+          className={`${buttonClasses} bg-gray-600 text-white hover:bg-gray-700`}
+        >
+          Fetch
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        <h2 className="font-semibold">Get User by Username</h2>
+        <input
+          type="text"
+          placeholder="Username"
+          value={fetchByName}
+          onChange={(e) => setFetchByName(e.target.value)}
+          className="border px-2 py-1 rounded"
+        />
+        <button
+          onClick={async () => {
+            try {
+              const res = await getUserByUsername(fetchByName);
+              setResult(res);
+            } catch (err) {
+              setResult({ error: err.response?.data || err.message });
+            }
+          }}
+          className={`${buttonClasses} bg-green-600 text-white hover:bg-green-700`}
+        >
+          Fetch
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        <h2 className="font-semibold">Delete User</h2>
+        <input
+          type="text"
+          placeholder="User ID"
+          value={deleteId}
+          onChange={(e) => setDeleteId(e.target.value)}
+          className="border px-2 py-1 rounded"
+        />
+        <button
+          onClick={async () => {
+            try {
+              await deleteUser(deleteId);
+              setResult({ message: "Deleted successfully" });
+            } catch (err) {
+              setResult({ error: err.response?.data || err.message });
+            }
+          }}
+          className={`${buttonClasses} bg-red-600 text-white hover:bg-red-700`}
+        >
+          Delete
+        </button>
+      </div>
+
+      <div className="mt-4">
+        {result && (
+          <pre className="bg-gray-100 p-2 rounded">{JSON.stringify(result, null, 2)}</pre>
+        )}
+      </div>
     </div>
   );
 }

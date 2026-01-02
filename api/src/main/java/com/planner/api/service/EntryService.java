@@ -39,7 +39,7 @@ public class EntryService {
                 .orElseThrow(() -> new RuntimeException("Record not found"));
     }
 
-    public List<Entry> getRecordsByUser(UUID userId) {
+    public List<Entry> getRecordsByUser(Long userId) {
         return recordRepository.findByUserId(userId);
     }
 

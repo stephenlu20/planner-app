@@ -22,7 +22,7 @@ public class CalendarController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<CalendarResponseDTO> getCalendarsForUser(@PathVariable UUID userId) {
+    public List<CalendarResponseDTO> getCalendarsForUser(@PathVariable Long userId) {
         return calendarService.getCalendarsForUser(userId)
                 .stream()
                 .map(this::toDto)

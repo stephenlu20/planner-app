@@ -2,18 +2,17 @@ package com.planner.api.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String username;
 
@@ -25,7 +24,7 @@ public class User {
         this.username = username;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
@@ -37,7 +36,7 @@ public class User {
         this.username = username;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 }

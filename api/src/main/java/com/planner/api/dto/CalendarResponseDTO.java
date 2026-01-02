@@ -7,9 +7,9 @@ public class CalendarResponseDTO {
     private UUID id;
     private String name;
     private int orderIndex;
-    private UUID userId;
+    private Long userId;
 
-    public CalendarResponseDTO(UUID id, String name, int orderIndex, UUID userId) {
+    public CalendarResponseDTO(UUID id, String name, int orderIndex, Long userId) {
         this.id = id;
         this.name = name;
         this.orderIndex = orderIndex;
@@ -28,7 +28,7 @@ public class CalendarResponseDTO {
         return orderIndex;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 }

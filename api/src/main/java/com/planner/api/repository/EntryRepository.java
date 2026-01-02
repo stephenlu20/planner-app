@@ -11,5 +11,5 @@ public interface EntryRepository extends JpaRepository<Entry, UUID> {
 
     List<Entry> findBySubjectTypeAndSubjectId(EntrySubjectType subjectType, UUID subjectId);
 
-    List<Entry> findByUserId(UUID userId);
+    List<Entry> findByUserId(Long userId);
 }

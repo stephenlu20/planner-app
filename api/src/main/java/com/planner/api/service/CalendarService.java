@@ -27,19 +27,19 @@ public class CalendarService {
                 .orElseThrow(() -> new IllegalArgumentException("Calendar not found"));
     }
 
-    public List<Calendar> getCalendarsForUser(UUID userId) {
+    public List<Calendar> getCalendarsForUser(Long userId) {
         User user = userService.getUser(userId);
         return calendarRepository.findByUserOrderByOrderIndexAsc(user);
     }
 
-    public Calendar createCalendar(UUID userId, String name, int orderIndex) {
+    public Calendar createCalendar(Long userId, String name, int orderIndex) {
         User user = userService.getUser(userId);
         Calendar calendar = new Calendar(user, name);
         calendar.setOrderIndex(orderIndex);
         return calendarRepository.save(calendar);
     }
 
-    public List<Calendar> reorderCalendars(UUID userId, List<UUID> orderedCalendarIds) {
+    public List<Calendar> reorderCalendars(Long userId, List<UUID> orderedCalendarIds) {
         User user = userService.getUser(userId);
         List<Calendar> calendars = calendarRepository.findByUserOrderByOrderIndexAsc(user);
 

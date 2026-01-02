@@ -6,13 +6,13 @@ public class EventCreateRequestDTO {
 
     private String note;
     private int orderIndex;
-    private UUID userId;
+    private Long userId;
     private UUID calendarId;
 
     public EventCreateRequestDTO() {
     }
 
-    public EventCreateRequestDTO(String note, int orderIndex, UUID userId, UUID calendarId) {
+    public EventCreateRequestDTO(String note, int orderIndex, Long userId, UUID calendarId) {
         this.note = note;
         this.orderIndex = orderIndex;
         this.userId = userId;
@@ -27,7 +27,7 @@ public class EventCreateRequestDTO {
         return orderIndex;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

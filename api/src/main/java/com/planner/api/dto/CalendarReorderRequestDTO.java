@@ -5,17 +5,17 @@ import java.util.UUID;
 
 public class CalendarReorderRequestDTO {
 
-    private UUID userId;
+    private Long userId;
     private List<UUID> orderedCalendarIds;
 
     public CalendarReorderRequestDTO() { }
 
-    public CalendarReorderRequestDTO(UUID userId, List<UUID> orderedCalendarIds) {
+    public CalendarReorderRequestDTO(Long userId, List<UUID> orderedCalendarIds) {
         this.userId = userId;
         this.orderedCalendarIds = orderedCalendarIds;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

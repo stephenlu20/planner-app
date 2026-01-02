@@ -8,7 +8,7 @@ public class TemplateResponseDTO {
     private String note; // updated
     private String color;
     private Integer defaultDuration;
-    private UUID ownerId;
+    private Long ownerId;
 
     // Getters and Setters
     public UUID getId() {
@@ -51,11 +51,11 @@ public class TemplateResponseDTO {
         this.defaultDuration = defaultDuration;
     }
 
-    public UUID getOwnerId() {
+    public Long getOwnerId() {
         return ownerId;
     }
 
-    public void setOwnerId(UUID ownerId) {
+    public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
 }

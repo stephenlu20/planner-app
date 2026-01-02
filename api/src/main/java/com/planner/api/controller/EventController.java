@@ -25,7 +25,7 @@ public class EventController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<EventResponseDTO> getEventsForUser(@PathVariable UUID userId) {
+    public List<EventResponseDTO> getEventsForUser(@PathVariable Long userId) {
         User user = userService.getUser(userId);
         return eventService.getEventsForUser(user)
                 .stream()

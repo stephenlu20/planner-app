@@ -1,18 +1,16 @@
 package com.planner.api.dto;
 
-import java.util.UUID;
-
 public class UserResponseDTO {
 
-    private UUID id;
+    private Long id;
     private String username;
 
-    public UserResponseDTO(UUID id, String username) {
+    public UserResponseDTO(Long id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 

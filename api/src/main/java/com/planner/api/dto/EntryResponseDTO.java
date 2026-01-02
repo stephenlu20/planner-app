@@ -9,7 +9,7 @@ import java.util.UUID;
 public class EntryResponseDTO {
 
     private UUID id;
-    private UUID userId;
+    private Long userId;
     private EntryType type;
     private EntrySubjectType subjectType;
     private UUID subjectId;
@@ -25,11 +25,11 @@ public class EntryResponseDTO {
         this.id = id;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

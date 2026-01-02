@@ -5,7 +5,7 @@ import com.planner.api.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import java.util.List;
 
 @Service
 @Transactional
@@ -22,7 +22,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User getUser(UUID id) {
+    public User getUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
@@ -32,14 +32,18 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
     }
 
-    public User updateUsername(UUID id, String newUsername) {
+    public User updateUsername(Long id, String newUsername) {
         User user = getUser(id);
         user.setUsername(newUsername);
         return userRepository.save(user);
     }
 
-    public void deleteUser(UUID id) {
+    public void deleteUser(Long id) {
         User user = getUser(id);
         userRepository.delete(user);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }

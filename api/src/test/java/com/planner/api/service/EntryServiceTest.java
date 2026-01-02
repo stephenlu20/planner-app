@@ -28,7 +28,7 @@ class EntryServiceTest {
         recordService = new EntryService(recordRepository);
 
         dummyUser = new User("Test User");
-        dummyUser.setId(UUID.randomUUID());
+        dummyUser.setId(1L);
         recordId = UUID.randomUUID();
     }
 

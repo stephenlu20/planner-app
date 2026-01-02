@@ -42,14 +42,14 @@ public class EventService {
         return event;
     }
 
-    public Event createEvent(String note, int orderIndex, UUID userId, UUID calendarId) {
+    public Event createEvent(String note, int orderIndex, Long userId, UUID calendarId) {
         User user = userService.getUser(userId);
         Calendar calendar = calendarService.getCalendar(calendarId);
         Event event = new Event(user, calendar, note, orderIndex);
         return eventRepository.save(event);
     }
 
-    public List<Event> reorderEventsForUser(UUID userId, List<UUID> orderedEventIds) {
+    public List<Event> reorderEventsForUser(Long userId, List<UUID> orderedEventIds) {
         User user = userService.getUser(userId);
         List<Event> events = eventRepository.findByUserOrderByOrderIndexAsc(user);
 

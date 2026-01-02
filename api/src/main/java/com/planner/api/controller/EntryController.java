@@ -24,7 +24,7 @@ public class EntryController {
     }
 
     @PostMapping("/user/{userId}")
-    public EntryResponseDTO createRecord(@PathVariable UUID userId,
+    public EntryResponseDTO createRecord(@PathVariable Long userId,
                                           @RequestBody EntryRequestDTO dto) {
         var user = userService.getUser(userId);
         Entry record = new Entry(user, dto.getType(), dto.getSubjectType(), dto.getSubjectId(),
@@ -39,7 +39,7 @@ public class EntryController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<EntryResponseDTO> getRecordsByUser(@PathVariable UUID userId) {
+    public List<EntryResponseDTO> getRecordsByUser(@PathVariable Long userId) {
         return recordService.getRecordsByUser(userId).stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());

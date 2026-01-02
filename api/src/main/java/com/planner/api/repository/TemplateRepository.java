@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface TemplateRepository extends JpaRepository<Template, UUID> {
-    List<Template> findAllByOwnerId(UUID ownerId);
+    List<Template> findAllByOwnerId(Long ownerId);
 }

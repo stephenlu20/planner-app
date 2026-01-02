@@ -1,9 +1,7 @@
 import api from "./axios";
 
 export const createUser = async (username) => {
-  const res = await api.post("/users", {
-    username
-  });
+  const res = await api.post("/users", { username });
   return res.data;
 };
 
@@ -19,4 +17,9 @@ export const getUserByUsername = async (username) => {
 
 export const deleteUser = async (userId) => {
   await api.delete(`/users/${userId}`);
+};
+
+export const getAllUsers = async () => {
+  const res = await api.get("/users");
+  return res.data;
 };

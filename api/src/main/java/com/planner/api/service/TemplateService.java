@@ -25,7 +25,7 @@ public class TemplateService {
                 .orElseThrow(() -> new RuntimeException("Template not found"));
     }
 
-    public List<Template> getTemplatesByUser(UUID userId) {
+    public List<Template> getTemplatesByUser(Long userId) {
         return templateRepository.findAllByOwnerId(userId);
     }
 

@@ -8,10 +8,10 @@ public class EventResponseDTO {
     private String note;
     private int orderIndex;
     private boolean completed;
-    private UUID userId;
+    private Long userId;
     private UUID calendarId;
 
-    public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, UUID userId, UUID calendarId) {
+    public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, Long userId, UUID calendarId) {
         this.id = id;
         this.note = note;
         this.orderIndex = orderIndex;
@@ -36,7 +36,7 @@ public class EventResponseDTO {
         return completed;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

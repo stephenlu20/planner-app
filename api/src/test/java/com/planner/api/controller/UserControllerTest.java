@@ -43,8 +43,8 @@ class UserControllerTest {
     @BeforeEach
     void cleanUp() {
         // delete dependent entities first
-        calendarRepository.deleteAll();
         eventRepository.deleteAll();
+        calendarRepository.deleteAll();
         userRepository.deleteAll();
     }
 
@@ -52,9 +52,9 @@ class UserControllerTest {
     void shouldCreateUpdateAndDeleteUser() throws Exception {
         // Create user
         mockMvc.perform(post("/users")
-                        .param("username", "stephen")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .content("{\"username\": \"stephen\"}")
+                .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
 
         User user = userRepository.findByUsername("stephen").orElseThrow();
 

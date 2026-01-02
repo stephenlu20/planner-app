@@ -25,7 +25,7 @@ public class TemplateController {
     }
 
     @PostMapping("/user/{userId}")
-    public TemplateResponseDTO createTemplate(@PathVariable UUID userId,
+    public TemplateResponseDTO createTemplate(@PathVariable Long userId,
                                               @RequestBody TemplateRequestDTO dto) {
         User owner = userService.getUser(userId);
         Template template = new Template();
@@ -44,7 +44,7 @@ public class TemplateController {
     }
 
     @GetMapping("/user/{userId}")
-    public List<TemplateResponseDTO> getTemplatesByUser(@PathVariable UUID userId) {
+    public List<TemplateResponseDTO> getTemplatesByUser(@PathVariable Long userId) {
         return templateService.getTemplatesByUser(userId).stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
