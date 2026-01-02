@@ -29,6 +29,14 @@ public class CalendarController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping
+    public List<CalendarResponseDTO> getAllCalendars() {
+        return calendarService.getAllCalendars()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     @PostMapping
     public CalendarResponseDTO createCalendar(@RequestBody CalendarCreateRequestDTO request) {
         Calendar calendar = calendarService.createCalendar(request.getUserId(), request.getName(), request.getOrderIndex());

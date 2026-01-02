@@ -27,6 +27,11 @@ public class CalendarService {
                 .orElseThrow(() -> new IllegalArgumentException("Calendar not found"));
     }
 
+    public List<Calendar> getAllCalendars() {
+        return calendarRepository.findAll();
+    }
+
+
     public List<Calendar> getCalendarsForUser(Long userId) {
         User user = userService.getUser(userId);
         return calendarRepository.findByUserOrderByOrderIndexAsc(user);
