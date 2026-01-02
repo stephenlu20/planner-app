@@ -33,8 +33,8 @@ class UserServiceTest {
     @BeforeEach
     void cleanUp() {
         // delete dependent entities first
-        calendarRepository.deleteAll();
         eventRepository.deleteAll();
+        calendarRepository.deleteAll();
         userRepository.deleteAll();
     }
 
