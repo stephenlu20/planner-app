@@ -2,12 +2,16 @@ import { useState } from "react";
 import Tabs from "../components/tabs/Tabs";
 import UserTester from "../components/testers/UserTester";
 import CalendarTester from "../components/testers/CalendarTester";
+import TemplateTester from "../components/testers/TemplateTester";
 import EventTester from "../components/testers/EventTester";
+import EntryTester from "../components/testers/EntryTester";
 
 const TAB_MAP = {
   Users: UserTester,
   Calendars: CalendarTester,
+  Templates: TemplateTester,
   Events: EventTester,
+  Entries: EntryTester,
 };
 
 export default function ApiTester() {
