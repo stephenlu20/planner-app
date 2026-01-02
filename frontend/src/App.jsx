@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import TabButton from "./components/tabs/TabButton";
+import UserTester from "./components/testers/UserTester";
+import CalendarTester from "./components/testers/CalendarTester";
+import EventTester from "./components/testers/EventTester";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeTab, setActiveTab] = useState("Users");
+
+  const renderTab = () => {
+    switch (activeTab) {
+      case "Users":
+        return <UserTester />;
+      case "Calendars":
+        return <CalendarTester />;
+      case "Events":
+        return <EventTester />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen p-6 bg-gray-50">
+      <h1 className="text-3xl font-bold mb-6">Planner API Tester</h1>
+
+      <div className="flex space-x-2 border-b-2 mb-4">
+        {["Users", "Calendars", "Events"].map((tab) => (
+          <TabButton
+            key={tab}
+            label={tab}
+            active={activeTab === tab}
+            onClick={() => setActiveTab(tab)}
+          />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      <div className="p-4 bg-white rounded shadow">{renderTab()}</div>
+    </div>
+  );
 }
 
-export default App
+export default App;
