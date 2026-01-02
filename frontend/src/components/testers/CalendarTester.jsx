@@ -1,81 +1,125 @@
 import { useState } from "react";
-import {
-  createCalendar,
-  getCalendarsForUser,
-  reorderCalendars,
-  deleteCalendar
-} from "../../api/calendarApi";
+import { getCalendarsForUser, createCalendar, reorderCalendars, deleteCalendar, getAllCalendars } from "../../api/calendarAPI";
 
 export default function CalendarTester() {
-  const [userId, setUserId] = useState("");
-  const [calendarName, setCalendarName] = useState("");
-  const [calendars, setCalendars] = useState([]);
-  const [result, setResult] = useState(null);
+  const [userIdCreate, setUserIdCreate] = useState("");
+  const [nameCreate, setNameCreate] = useState("");
+  const [orderCreate, setOrderCreate] = useState(0);
 
-  const handleCreate = async () => {
-    const res = await createCalendar(userId, calendarName);
-    setResult(res);
-  };
+  const [userIdFetch, setUserIdFetch] = useState("");
 
-  const handleFetch = async () => {
-    const res = await getCalendarsForUser(userId);
-    setCalendars(res);
-    setResult(res);
-  };
+  const [userIdReorder, setUserIdReorder] = useState("");
+  const [orderedIds, setOrderedIds] = useState("");
 
-  const handleReverseOrder = async () => {
-    const ids = calendars.map(c => c.id).reverse();
-    const res = await reorderCalendars(userId, ids);
-    setCalendars(res);
-    setResult(res);
-  };
+  const [deleteId, setDeleteId] = useState("");
+
+  const [output, setOutput] = useState("");
+
+  const buttonClass = "px-3 py-1 rounded text-white hover:cursor-pointer active:scale-95 transition-transform";
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Calendar API</h2>
+    <div className="p-6 space-y-6">
+      <h2 className="text-xl font-bold">Calendar API Tester</h2>
 
-      <input
-        className="border px-3 py-2 rounded w-96"
-        placeholder="User ID"
-        value={userId}
-        onChange={e => setUserId(e.target.value)}
-      />
-
-      <input
-        className="border px-3 py-2 rounded w-96"
-        placeholder="Calendar name"
-        value={calendarName}
-        onChange={e => setCalendarName(e.target.value)}
-      />
-
-      <div className="flex gap-2">
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Create Calendar</h3>
+        <input placeholder="User ID" value={userIdCreate} onChange={(e) => setUserIdCreate(e.target.value)} className="border p-1" />
+        <input placeholder="Name" value={nameCreate} onChange={(e) => setNameCreate(e.target.value)} className="border p-1" />
+        <input type="number" placeholder="Order Index" value={orderCreate} onChange={(e) => setOrderCreate(Number(e.target.value))} className="border p-1" />
         <button
-          onClick={handleCreate}
-          className="bg-indigo-500 text-white px-4 py-2 rounded"
+          className={`${buttonClass} bg-blue-500`}
+          onClick={async () => {
+            try {
+              const res = await createCalendar(userIdCreate, nameCreate, orderCreate);
+              setOutput(JSON.stringify(res, null, 2));
+            } catch (err) {
+              setOutput(err.response?.data || err.message);
+            }
+          }}
         >
-          Create Calendar
+          Create
         </button>
+      </section>
 
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Get Calendars for User</h3>
+        <input placeholder="User ID" value={userIdFetch} onChange={(e) => setUserIdFetch(e.target.value)} className="border p-1" />
         <button
-          onClick={handleFetch}
-          className="bg-gray-600 text-white px-4 py-2 rounded"
+          className={`${buttonClass} bg-purple-500`}
+          onClick={async () => {
+            try {
+              const res = await getCalendarsForUser(userIdFetch);
+              setOutput(JSON.stringify(res, null, 2));
+            } catch (err) {
+              setOutput(err.response?.data || err.message);
+            }
+          }}
         >
-          Fetch Calendars
+          Fetch
         </button>
+      </section>
 
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Reorder Calendars</h3>
+        <input placeholder="User ID" value={userIdReorder} onChange={(e) => setUserIdReorder(e.target.value)} className="border p-1" />
+        <input
+          placeholder="Comma-separated Calendar IDs"
+          value={orderedIds}
+          onChange={(e) => setOrderedIds(e.target.value)}
+          className="border p-1 w-full max-w-xl whitespace-nowrap overflow-x-auto"
+        />
         <button
-          onClick={handleReverseOrder}
-          className="bg-orange-500 text-white px-4 py-2 rounded"
+          className={`${buttonClass} bg-green-500`}
+          onClick={async () => {
+            try {
+              const idsArray = orderedIds.split(",").map((id) => id.trim());
+              const res = await reorderCalendars(userIdReorder, idsArray);
+              setOutput(JSON.stringify(res, null, 2));
+            } catch (err) {
+              setOutput(err.response?.data || err.message);
+            }
+          }}
         >
-          Reverse Order
+          Reorder
         </button>
-      </div>
+      </section>
 
-      {result && (
-        <pre className="bg-slate-100 p-4 rounded text-sm">
-          {JSON.stringify(result, null, 2)}
-        </pre>
-      )}
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Delete Calendar</h3>
+        <input placeholder="Calendar ID" value={deleteId} onChange={(e) => setDeleteId(e.target.value)} className="border p-1" />
+        <button
+          className={`${buttonClass} bg-red-500`}
+          onClick={async () => {
+            try {
+              await deleteCalendar(deleteId);
+              setOutput(`Deleted calendar ${deleteId}`);
+            } catch (err) {
+              setOutput(err.response?.data || err.message);
+            }
+          }}
+        >
+          Delete
+        </button>
+      </section>
+
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Get All Calendars</h3>
+        <button
+          className="bg-purple-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
+          onClick={async () => {
+            try {
+              const res = await getAllCalendars();
+              setOutput(JSON.stringify(res, null, 2));
+            } catch (err) {
+              setOutput(err.response?.data || err.message);
+            }
+          }}
+        >
+          Fetch All
+        </button>
+      </section>
+
+      <pre className="p-4 border rounded bg-gray-100 overflow-auto">{output}</pre>
     </div>
   );
 }

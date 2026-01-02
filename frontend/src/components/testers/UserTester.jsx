@@ -6,131 +6,132 @@ export default function UserTester() {
   const [fetchById, setFetchById] = useState("");
   const [fetchByName, setFetchByName] = useState("");
   const [deleteId, setDeleteId] = useState("");
-  const [result, setResult] = useState(null);
+  const [output, setOutput] = useState("");
 
-  const buttonClasses =
-    "px-4 py-2 rounded font-medium transition transform active:scale-95 cursor-pointer";
+  const handleCreate = async () => {
+    try {
+      const res = await createUser(username);
+      setOutput(JSON.stringify(res, null, 2));
+    } catch (err) {
+      setOutput(err.response?.data || err.message);
+    }
+  };
+
+  const handleGetAll = async () => {
+    try {
+      const res = await getAllUsers();
+      setOutput(JSON.stringify(res, null, 2));
+    } catch (err) {
+      setOutput(err.response?.data || err.message);
+    }
+  };
+
+  const handleGetById = async () => {
+    try {
+      const res = await getUserById(fetchById);
+      setOutput(JSON.stringify(res, null, 2));
+    } catch (err) {
+      setOutput(err.response?.data || err.message);
+    }
+  };
+
+  const handleGetByUsername = async () => {
+    try {
+      const res = await getUserByUsername(fetchByName);
+      setOutput(JSON.stringify(res, null, 2));
+    } catch (err) {
+      setOutput(err.response?.data || err.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(deleteId);
+      setOutput(`User ${deleteId} deleted successfully`);
+    } catch (err) {
+      setOutput(err.response?.data || err.message);
+    }
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="space-y-2">
-        <h2 className="font-semibold">Create User</h2>
+    <div className="p-6 space-y-6 font-sans">
+      <h2 className="text-xl font-bold">User API Tester</h2>
+
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Create User</h3>
         <input
-          type="text"
+          className="border p-1"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          className="border px-2 py-1 rounded"
         />
         <button
-          onClick={async () => {
-            try {
-              const res = await createUser(username);
-              setResult(res);
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-          className={`${buttonClasses} bg-blue-600 text-white hover:bg-blue-700`}
+          onClick={handleCreate}
+          className="bg-blue-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
         >
           Create
         </button>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <h2 className="font-semibold">Get All Users</h2>
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Get All Users</h3>
         <button
-          onClick={async () => {
-            try {
-              const res = await getAllUsers();
-              setResult(res);
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-          className={`${buttonClasses} bg-purple-600 text-white hover:bg-purple-700`}
+          onClick={handleGetAll}
+          className="bg-purple-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
         >
           Fetch All
         </button>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <h2 className="font-semibold">Get User by ID</h2>
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Get User by ID</h3>
         <input
-          type="text"
+          className="border p-1"
           placeholder="User ID"
           value={fetchById}
           onChange={(e) => setFetchById(e.target.value)}
-          className="border px-2 py-1 rounded"
         />
         <button
-          onClick={async () => {
-            try {
-              const res = await getUserById(fetchById);
-              setResult(res);
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-          className={`${buttonClasses} bg-gray-600 text-white hover:bg-gray-700`}
+          onClick={handleGetById}
+          className="bg-gray-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
         >
           Fetch
         </button>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <h2 className="font-semibold">Get User by Username</h2>
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Get User by Username</h3>
         <input
-          type="text"
+          className="border p-1"
           placeholder="Username"
           value={fetchByName}
           onChange={(e) => setFetchByName(e.target.value)}
-          className="border px-2 py-1 rounded"
         />
         <button
-          onClick={async () => {
-            try {
-              const res = await getUserByUsername(fetchByName);
-              setResult(res);
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-          className={`${buttonClasses} bg-green-600 text-white hover:bg-green-700`}
+          onClick={handleGetByUsername}
+          className="bg-green-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
         >
           Fetch
         </button>
-      </div>
+      </section>
 
-      <div className="space-y-2">
-        <h2 className="font-semibold">Delete User</h2>
+      <section className="p-4 border rounded space-y-2">
+        <h3 className="font-semibold">Delete User</h3>
         <input
-          type="text"
+          className="border p-1"
           placeholder="User ID"
           value={deleteId}
           onChange={(e) => setDeleteId(e.target.value)}
-          className="border px-2 py-1 rounded"
         />
         <button
-          onClick={async () => {
-            try {
-              await deleteUser(deleteId);
-              setResult({ message: "Deleted successfully" });
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-          className={`${buttonClasses} bg-red-600 text-white hover:bg-red-700`}
+          onClick={handleDelete}
+          className="bg-red-500 text-white px-3 py-1 rounded hover:cursor-pointer active:scale-95 transition-transform"
         >
           Delete
         </button>
-      </div>
+      </section>
 
-      <div className="mt-4">
-        {result && (
-          <pre className="bg-gray-100 p-2 rounded">{JSON.stringify(result, null, 2)}</pre>
-        )}
-      </div>
+      <pre className="p-4 border rounded bg-gray-100 overflow-auto">{output}</pre>
     </div>
   );
 }
