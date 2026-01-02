@@ -1,6 +1,11 @@
 import api from "./axios";
 
-export const createEvent = async (note, orderIndex, userId, calendarId) => {
+export const createEvent = async ({
+  note,
+  orderIndex,
+  userId,
+  calendarId
+}) => {
   const res = await api.post("/events", {
     note,
     orderIndex,
@@ -10,14 +15,28 @@ export const createEvent = async (note, orderIndex, userId, calendarId) => {
   return res.data;
 };
 
-export const toggleEvent = async (eventId) => {
+export const getEventsByUser = async (userId) => {
+  const res = await api.get(`/events/user/${userId}`);
+  return res.data;
+};
+
+export const getEventsByCalendar = async (calendarId) => {
+  const res = await api.get(`/events/calendar/${calendarId}`);
+  return res.data;
+};
+
+
+export const toggleEventCompleted = async (eventId) => {
   const res = await api.put(`/events/${eventId}/toggle`);
   return res.data;
 };
 
-export const reorderEvents = async (userId, orderedEventIds) => {
+export const reorderEvents = async ({
+  calendarId,
+  orderedEventIds
+}) => {
   const res = await api.put("/events/reorder", {
-    userId,
+    calendarId,
     orderedEventIds
   });
   return res.data;
