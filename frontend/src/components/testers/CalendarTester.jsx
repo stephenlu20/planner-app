@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getCalendarsForUser, createCalendar, reorderCalendars, deleteCalendar, getAllCalendars } from "../../api/calendarAPI";
+import { getCalendarsForUser, createCalendar, reorderCalendars, deleteCalendar, getAllCalendars } from "../../api/calendarApi";
 
 export default function CalendarTester() {
   const [userIdCreate, setUserIdCreate] = useState("");
