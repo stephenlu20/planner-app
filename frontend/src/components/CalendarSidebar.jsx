@@ -6,11 +6,11 @@ export default function CalendarSidebar({
 }) {
   return (
     <div className="w-64 bg-white border-r p-4 flex flex-col">
-      <h2 className="font-semibold mb-4">Calendars</h2>
+      <h2 className="font-semibold mb-4 cursor-default caret-transparent">Calendars</h2>
 
       <div className="flex-1 space-y-1">
         {calendars.length === 0 && (
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 cursor-default caret-transparent">
             No calendars yet
           </div>
         )}

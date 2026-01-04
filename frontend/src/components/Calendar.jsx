@@ -30,16 +30,16 @@ export default function Calendar() {
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={prevMonth}
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 active:scale-95 transition cursor-pointer"
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 active:scale-95 transition cursor-pointer caret-transparent"
         >
           Previous
         </button>
 
-        <h2 className="text-xl font-semibold">{monthLabel}</h2>
+        <h2 className="text-xl font-semibold caret-transparent cursor-default">{monthLabel}</h2>
 
         <button
           onClick={nextMonth}
-          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 active:scale-95 transition cursor-pointer"
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 active:scale-95 transition cursor-pointer caret-transparent"
         >
           Next
         </button>
@@ -47,7 +47,7 @@ export default function Calendar() {
 
       <div className="grid grid-cols-7 gap-2 text-center">
         {DAYS.map((day) => (
-          <div key={day} className="font-semibold text-gray-600">
+          <div key={day} className="font-semibold text-gray-600 caret-transparent cursor-default">
             {day}
           </div>
         ))}
@@ -59,7 +59,7 @@ export default function Calendar() {
               day ? "bg-gray-50" : "bg-transparent"
             }`}
           >
-            {day && <span className="text-sm">{day}</span>}
+            {day && <span className="text-sm caret-transparent cursor-default">{day}</span>}
           </div>
         ))}
       </div>

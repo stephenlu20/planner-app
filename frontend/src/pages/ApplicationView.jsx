@@ -26,7 +26,7 @@ export default function ApplicationView({ userId, setUserId }) {
         <div className="flex justify-end mb-4">
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition cursor-pointer"
+            className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition cursor-pointer caret-transparent"
           >
             Logout
           </button>
