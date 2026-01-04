@@ -1,8 +1,31 @@
+import { useState, useEffect } from "react" ;
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
 import CalendarSidebar from "../components/CalendarSidebar";
+import { getCalendarsForUser } from "../api/calendarApi";
 
 export default function ApplicationView({ userId, setUserId }) {
+
+  const [calendars, setCalendars] = useState([]);
+  const [activeCalendarId, setActiveCalendarId] = useState(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    const fetchCalendars = async () => {
+      try {
+        const data = await getCalendarsForUser(userId);
+        setCalendars(data);
+
+        if (data.length > 0) setActiveCalendarId(data[0].id);
+      } catch (err) {
+        console.error("Failed to fetch calendars:", err);
+      }
+    };
+
+    fetchCalendars();
+  }, [userId]);
+
   const handleLogout = () => {
     localStorage.removeItem("userId");
     setUserId(null);
@@ -10,16 +33,14 @@ export default function ApplicationView({ userId, setUserId }) {
 
   if (!userId) return <LoginPage onLogin={setUserId} />;
 
-  const calendars = [];
-  const activeCalendarId = null;
-
   return (
     <div className="flex min-h-screen">
       <CalendarSidebar
+        userId={userId}
         calendars={calendars}
+        setCalendars={setCalendars}
         activeCalendarId={activeCalendarId}
-        onSelect={() => {}}
-        onCreate={() => {}}
+        onSelect={setActiveCalendarId}
       />
 
       <div className="flex-1 p-6">
