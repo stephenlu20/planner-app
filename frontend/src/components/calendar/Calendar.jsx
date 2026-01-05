@@ -4,7 +4,7 @@ const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 
 
 export default function Calendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState("month");
+  const [view, setView] = useState("week");
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
