@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTemplatesByUser } from "../../api/templateApi";
+import { getTemplatesByUser, deleteTemplate } from "../../api/templateApi";
 import TemplateFormModal from "./TemplateFormModal";
 
 export default function TemplatesPage({ userId }) {
@@ -8,6 +8,22 @@ export default function TemplatesPage({ userId }) {
 
   const [showModal, setShowModal] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState(null);
+
+  const handleDeleteTemplate = async (templateId) => {
+  const confirmed = window.confirm(
+      "Are you sure you want to delete this template? This action cannot be undone."
+    );
+  
+    if (!confirmed) return;
+  
+    try {
+      await deleteTemplate(templateId);
+      setTemplates((prev) => prev.filter((t) => t.id !== templateId));
+    } catch (err) {
+      console.error("Failed to delete template", err);
+      alert("Failed to delete template");
+    }
+  };
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -70,7 +86,10 @@ export default function TemplatesPage({ userId }) {
                   Edit
                 </button>
 
-                <button className="text-sm text-red-600 hover:underline transition cursor-pointer">
+                <button
+                  onClick={() => handleDeleteTemplate(template.id)}
+                  className="text-sm text-red-600 hover:underline transition cursor-pointer"
+                >
                   Delete
                 </button>
               </div>
