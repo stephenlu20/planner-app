@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { getTemplatesByUser, deleteTemplate } from "../../api/templateApi";
 import TemplateFormModal from "./TemplateFormModal";
+import TemplateViewModal from "./TemplateViewModal";
 
 export default function TemplatesPage({ userId }) {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [viewTemplate, setViewTemplate] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState(null);
@@ -74,8 +76,15 @@ export default function TemplatesPage({ userId }) {
               <div className="font-medium mb-2">
                 {template.name}
               </div>
-
+              
               <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => setViewTemplate(template)}
+                  className="text-sm text-gray-700 hover:underline transition cursor-pointer"
+                >
+                  View
+                </button>
+
                 <button
                   onClick={() => {
                     setActiveTemplate(template);
@@ -98,7 +107,6 @@ export default function TemplatesPage({ userId }) {
         </div>
       )}
 
-      {/* CREATE / EDIT MODAL */}
       {showModal && (
         <TemplateFormModal
           userId={userId}
@@ -113,6 +121,13 @@ export default function TemplatesPage({ userId }) {
                 : [...prev, savedTemplate]
             );
           }}
+        />
+      )}
+
+      {viewTemplate && (
+        <TemplateViewModal
+          template={viewTemplate}
+          onClose={() => setViewTemplate(null)}
         />
       )}
     </div>
