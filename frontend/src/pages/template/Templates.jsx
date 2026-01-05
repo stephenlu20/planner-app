@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { getTemplatesByUser, createTemplate } from "../../api/templateApi";
+import { getTemplatesByUser } from "../../api/templateApi";
 import TemplateFormModal from "./TemplateFormModal";
 
 export default function TemplatesPage({ userId }) {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [activeTemplate, setActiveTemplate] = useState(null);
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -22,19 +24,6 @@ export default function TemplatesPage({ userId }) {
     loadTemplates();
   }, [userId]);
 
-  const handleCreateTemplate = async () => {
-    try {
-      const newTemplate = {
-        name: "New Template",
-      };
-
-      const created = await createTemplate(userId, newTemplate);
-      setTemplates((prev) => [...prev, created]);
-    } catch (err) {
-      console.error("Failed to create template", err);
-    }
-  };
-
   if (loading) {
     return <div className="p-6">Loading templates…</div>;
   }
@@ -45,7 +34,10 @@ export default function TemplatesPage({ userId }) {
         <h1 className="text-2xl font-semibold">Templates</h1>
 
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => {
+            setActiveTemplate(null);
+            setShowModal(true);
+          }}
           className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-400 transition cursor-pointer"
         >
           + New Template
@@ -68,9 +60,16 @@ export default function TemplatesPage({ userId }) {
               </div>
 
               <div className="flex gap-2 mt-4">
-                <button className="text-sm text-blue-600 hover:underline transition cursor-pointer">
+                <button
+                  onClick={() => {
+                    setActiveTemplate(template);
+                    setShowModal(true);
+                  }}
+                  className="text-sm text-blue-600 hover:underline transition cursor-pointer"
+                >
                   Edit
                 </button>
+
                 <button className="text-sm text-red-600 hover:underline transition cursor-pointer">
                   Delete
                 </button>
@@ -79,13 +78,22 @@ export default function TemplatesPage({ userId }) {
           ))}
         </div>
       )}
-      {showCreateModal && (
+
+      {/* CREATE / EDIT MODAL */}
+      {showModal && (
         <TemplateFormModal
           userId={userId}
-          onClose={() => setShowCreateModal(false)}
-          onCreated={(template) =>
-            setTemplates((prev) => [...prev, template])
-          }
+          template={activeTemplate}
+          onClose={() => setShowModal(false)}
+          onSaved={(savedTemplate) => {
+            setTemplates((prev) =>
+              activeTemplate
+                ? prev.map((t) =>
+                    t.id === savedTemplate.id ? savedTemplate : t
+                  )
+                : [...prev, savedTemplate]
+            );
+          }}
         />
       )}
     </div>
