@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
-import CalendarSidebar from "../components/CalendarSidebar";
-import Templates from "./Templates";
+import CalendarSidebar from "../components/calendar/CalendarSidebar";
+import Templates from "./template/Templates";
 import { getCalendarsForUser } from "../api/calendarApi";
 
 export default function ApplicationView({ userId, setUserId }) {
@@ -43,7 +43,7 @@ export default function ApplicationView({ userId, setUserId }) {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveView("calendars")}
-            className={`px-3 py-1 rounded transition caret-transparent ${
+            className={`px-3 py-1 rounded transition cursor-pointer ${
               activeView === "calendars"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -54,7 +54,7 @@ export default function ApplicationView({ userId, setUserId }) {
 
           <button
             onClick={() => setActiveView("templates")}
-            className={`px-3 py-1 rounded transition caret-transparent ${
+            className={`px-3 py-1 rounded transition cursor-pointer ${
               activeView === "templates"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -66,11 +66,11 @@ export default function ApplicationView({ userId, setUserId }) {
 
         <button
           onClick={handleLogout}
-          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition caret-transparent"
+          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition cursor-pointer"
         >
           Logout
         </button>
-      </div>
+      </div>  
 
       {/* Main content */}
       {activeView === "calendars" && (

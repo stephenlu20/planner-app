@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { getTemplatesByUser } from "../api/templateApi";
+import { getTemplatesByUser, createTemplate } from "../../api/templateApi";
+import TemplateFormModal from "./TemplateFormModal";
 
 export default function TemplatesPage({ userId }) {
   const [templates, setTemplates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     const loadTemplates = async () => {
@@ -20,6 +22,19 @@ export default function TemplatesPage({ userId }) {
     loadTemplates();
   }, [userId]);
 
+  const handleCreateTemplate = async () => {
+    try {
+      const newTemplate = {
+        name: "New Template",
+      };
+
+      const created = await createTemplate(userId, newTemplate);
+      setTemplates((prev) => [...prev, created]);
+    } catch (err) {
+      console.error("Failed to create template", err);
+    }
+  };
+
   if (loading) {
     return <div className="p-6">Loading templates…</div>;
   }
@@ -27,12 +42,11 @@ export default function TemplatesPage({ userId }) {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">
-          Templates
-        </h1>
+        <h1 className="text-2xl font-semibold">Templates</h1>
 
         <button
-          className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-400 transition"
+          onClick={() => setShowCreateModal(true)}
+          className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-400 transition cursor-pointer"
         >
           + New Template
         </button>
@@ -54,16 +68,25 @@ export default function TemplatesPage({ userId }) {
               </div>
 
               <div className="flex gap-2 mt-4">
-                <button className="text-sm text-blue-600 hover:underline">
+                <button className="text-sm text-blue-600 hover:underline transition cursor-pointer">
                   Edit
                 </button>
-                <button className="text-sm text-red-600 hover:underline">
+                <button className="text-sm text-red-600 hover:underline transition cursor-pointer">
                   Delete
                 </button>
               </div>
             </div>
           ))}
         </div>
+      )}
+      {showCreateModal && (
+        <TemplateFormModal
+          userId={userId}
+          onClose={() => setShowCreateModal(false)}
+          onCreated={(template) =>
+            setTemplates((prev) => [...prev, template])
+          }
+        />
       )}
     </div>
   );
