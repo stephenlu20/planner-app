@@ -2,7 +2,7 @@
 
 ## Product Name
 
-*TBD* (e.g. Chronicle, Logbook, Ledger)
+*TBD* (e.g. Chronicle, Entrybook, Ledger)
 
 ---
 
@@ -49,11 +49,11 @@ A planned or completed activity on a calendar.
 - Sub-events inherit date and calendar context from their parent
 - Each Event may contain:
     - One optional note
-    - Zero or more Logs
+    - Zero or more Entries
 
 ---
 
-### Log
+### Entry
 
 A structured piece of entryed data associated with an Event or Template.
 
@@ -64,13 +64,13 @@ Examples include:
 - Checkbox/list
 - Table (e.g. workout sets)
 
-Logs are:
+Entries are:
 
 - User-labeled
 - Ordered
 - Typed (fixed set of supported types)
 
-Logs are used for journaling detail and future analytics.
+Entries are used for journaling detail and future analytics.
 
 ---
 
@@ -108,9 +108,9 @@ Templates represent intent, not history.
 
 ---
 
-### 3. Logs (Structured Data)
+### 3. Entries (Structured Data)
 
-Supported Log types (V1):
+Supported Entry types (V1):
 
 - Text
 - Number
@@ -118,7 +118,7 @@ Supported Log types (V1):
 - Checkbox/List
 - Table
 
-Logs:
+Entries:
 
 - Are optional
 - Are user-defined
@@ -136,7 +136,7 @@ Journal views include:
 
 - Event titles
 - Notes
-- Relevant Log values (e.g. durations, tables)
+- Relevant Entry values (e.g. durations, tables)
 
 ---
 
@@ -146,7 +146,7 @@ Journal views include:
 - Templates mirror Event structure
 - Applying a Template:
     - Creates Events on the calendar
-    - Copies structure and default Logs
+    - Copies structure and default Entries
 - Generated Events are not linked back to the Template
 
 ---
@@ -158,11 +158,11 @@ User
 ├── Calendar
 │   └── Event
 │       └── Event (child)
-│           └── Log
+│           └── Entry
 │
 └── Template
     └── Template (child)
-        └── Log
+        └── Entry
 ```
 
 A **User** owns all data in the system. Each User may create multiple **Calendars**, which represent distinct planning domains such as fitness, personal life, or work.
@@ -174,16 +174,16 @@ Events may be **hierarchical**. A top-level Event represents a primary activity 
 Each Event may contain:
 
 - One optional free-form note, used for journaling or reflection
-- Zero or more **Logs**, which store structured data such as durations, numeric values, checkbox lists, or tables
+- Zero or more **Entries**, which store structured data such as durations, numeric values, checkbox lists, or tables
 
-Logs represent entryed details that matter to the user and may later be used for analytics or visualization. Logs are optional and user-defined.
+Entries represent entryed details that matter to the user and may later be used for analytics or visualization. Entries are optional and user-defined.
 
 In addition to Calendars and Events, a User may create **Templates**. Templates define reusable, hierarchical structures that mirror the shape of Events but do not exist on the calendar timeline.
 
 Templates:
 
 - May contain child Templates
-- May contain default Logs
+- May contain default Entries
 - Do not have dates or completion state
 
 When a Template is applied, it generates one or more fully detached Events on a Calendar. Once created, Events do not maintain a relationship to the Template that generated them.
@@ -199,7 +199,7 @@ This model allows users to plan simple tasks or highly detailed activities using
 - Granularity is optional
 - Templates generate detached instances
 - Journals are projections, not stored data
-- Logs do not enforce global schemas
+- Entries do not enforce global schemas
 
 ---
 

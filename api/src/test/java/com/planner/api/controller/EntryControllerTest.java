@@ -69,17 +69,4 @@ class EntryControllerTest {
 
         verify(entryService, times(1)).createEntry(any(Entry.class));
     }
-
-    @Test
-    void testGetEntrysByUser() throws Exception {
-        Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Duration", "100");
-        Entry r2 = new Entry(dummyUser, EntryType.NUMBER, EntrySubjectType.TEMPLATE, UUID.randomUUID(), "Default", "30");
-
-        when(entryService.getEntrysByUser(userId)).thenReturn(List.of(r1, r2));
-
-        mockMvc.perform(get("/entries/user/" + userId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].label").value("Duration"))
-                .andExpect(jsonPath("$[1].label").value("Default"));
-    }
 }

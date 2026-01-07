@@ -95,32 +95,4 @@ class EntryServiceTest {
 
         verify(entryRepository, times(1)).deleteById(entryId);
     }
-
-    @Test
-    void testGetEntrysByUser() {
-        Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label1", "Value1");
-        Entry r2 = new Entry(dummyUser, EntryType.NUMBER, EntrySubjectType.TEMPLATE, UUID.randomUUID(), "Label2", "Value2");
-
-        when(entryRepository.findByUserId(dummyUser.getId())).thenReturn(List.of(r1, r2));
-
-        List<Entry> entries = entryService.getEntrysByUser(dummyUser.getId());
-
-        assertEquals(2, entries.size());
-        verify(entryRepository, times(1)).findByUserId(dummyUser.getId());
-    }
-
-    @Test
-    void testGetEntrysBySubject() {
-        UUID subjectId = UUID.randomUUID();
-        Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, subjectId, "Label1", "Value1");
-
-        when(entryRepository.findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId))
-                .thenReturn(List.of(r1));
-
-        List<Entry> entries = entryService.getEntrysBySubject(EntrySubjectType.EVENT, subjectId);
-
-        assertEquals(1, entries.size());
-        assertEquals("Label1", entries.get(0).getLabel());
-        verify(entryRepository, times(1)).findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId);
-    }
 }

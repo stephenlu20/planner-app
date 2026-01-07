@@ -1,11 +1,16 @@
 package com.planner.api.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "entries")
+@Table(
+        name = "entries",
+        indexes = {
+            @Index(name = "idx_entries_subject_order",
+                columnList = "subjectType, subjectId, orderIndex")
+        }
+    )
 public class Entry {
 
     @Id
@@ -25,8 +30,11 @@ public class Entry {
 
     private String label;
     private String value;
+    private Integer orderIndex;
 
-    private Instant createdAt = Instant.now();
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String note;
 
     protected Entry() { }
 
@@ -55,6 +63,8 @@ public class Entry {
     public void setLabel(String label) { this.label = label; }
     public String getValue() { return value; }
     public void setValue(String value) { this.value = value; }
-    public Instant getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public Integer getOrderIndex() { return orderIndex; }
+    public void setOrderIndex(Integer orderIndex) { this.orderIndex = orderIndex; }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 }

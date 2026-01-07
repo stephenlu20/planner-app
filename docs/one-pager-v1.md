@@ -33,22 +33,10 @@ The goal is to reduce friction between planning, doing, and reflecting.
   - Optional sub-tasks  
 - Events represent something the user intended to do or actually did  
 
-### Sub-Task (Optional Granularity)
-- Events can contain sub-tasks for deeper structure  
-- Sub-tasks can have:
-  - Their own notes  
-  - Their own structured fields  
-- Common uses:
-  - Workout exercises  
-  - Multi-step routines  
-  - Component activities  
-- Granularity is opt-in, not required  
-
 ### Structured Fields (Fixed Types)
 - Events and sub-tasks may contain structured fields selected by the user:
   - Text  
   - Number  
-  - Duration  
   - Checkbox / list  
   - Table (e.g., sets, intervals)  
 - Fields are predefined for usability and consistency but composable per task  
@@ -98,12 +86,27 @@ The goal is to reduce friction between planning, doing, and reflecting.
 - **Granularity is optional** – simple events stay simple; complex events can be deep  
 
 ---
+## Stretch Goal Feature (V1.5)
+
+### Sub-Task (Optional Granularity)
+- Events can contain sub-tasks for deeper structure  
+- Sub-tasks can have:
+  - Their own notes  
+  - Their own structured fields  
+- Common uses:
+  - Workout exercises  
+  - Multi-step routines  
+  - Component activities  
+- Granularity is opt-in, not required  
+
+---
 
 ## Non-Goals (V1)
 - Shared calendars or collaboration  
 - Social or community features  
 - Cross-user templates  
 - Advanced analytics or AI insights  
+- "True" nested sub-tasks
 
 ---
 

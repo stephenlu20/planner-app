@@ -9,7 +9,9 @@ import java.util.UUID;
 
 public interface EntryRepository extends JpaRepository<Entry, UUID> {
 
-    List<Entry> findBySubjectTypeAndSubjectId(EntrySubjectType subjectType, UUID subjectId);
+    List<Entry> findBySubjectTypeAndSubjectIdOrderByOrderIndexAsc(
+        EntrySubjectType subjectType,
+        UUID subjectId
+    );
 
-    List<Entry> findByUserId(Long userId);
 }
