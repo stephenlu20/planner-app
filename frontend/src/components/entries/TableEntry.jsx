@@ -1,4 +1,4 @@
-import { useState, useEffect, readOnly } from "react";
+import { useState, useEffect } from "react";
 
 export default function TableEntry({ entry, onChange, readOnly }) {
   const [table, setTable] = useState({ rows: 1, cols: 1, cells: [[""]] });

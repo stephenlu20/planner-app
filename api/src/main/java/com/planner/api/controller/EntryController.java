@@ -2,6 +2,7 @@ package com.planner.api.controller;
 
 import com.planner.api.dto.EntryRequestDTO;
 import com.planner.api.dto.EntryResponseDTO;
+import com.planner.api.dto.EntryUpdateDTO;
 import com.planner.api.entity.Entry;
 import com.planner.api.entity.EntrySubjectType;
 import com.planner.api.service.EntryService;
@@ -67,15 +68,26 @@ public class EntryController {
                 .collect(Collectors.toList());
     }
 
-    // UPDATE
     @PutMapping("/{entryId}")
     public EntryResponseDTO updateEntry(@PathVariable UUID entryId,
-                                        @Valid @RequestBody EntryRequestDTO dto) {
-        Entry updated = new Entry(null, null, null, null, dto.getLabel(), dto.getValue());
-        updated.setNote(dto.getNote()); // only update note/content
-        return toResponseDTO(entryService.updateEntry(entryId, updated));
-    }
+                                        @Valid @RequestBody EntryUpdateDTO dto) {
+        // Fetch the existing entry
+        Entry existing = entryService.getEntry(entryId);
 
+        // Only update editable fields
+        existing.setLabel(dto.getLabel());
+        existing.setValue(dto.getValue());
+        existing.setNote(dto.getNote());
+        if (dto.getOrderIndex() != null) {
+            existing.setOrderIndex(dto.getOrderIndex());
+        }
+
+        // Save update
+        Entry updated = entryService.updateEntry(entryId, existing);
+
+        return toResponseDTO(updated);
+    }
+    
     // DELETE
     @DeleteMapping("/{entryId}")
     public void deleteEntry(@PathVariable UUID entryId) {

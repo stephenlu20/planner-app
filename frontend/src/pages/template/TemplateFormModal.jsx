@@ -1,4 +1,4 @@
-import { useState, useEffect, readOnly } from "react";
+import { useState, useEffect } from "react";
 import { createTemplate, updateTemplate } from "../../api/templateApi";
 import { createEntry, updateEntry, deleteEntry, getEntriesBySubject } from "../../api/entryApi";
 import EntryRenderer from "../../components/entries/EntryRenderer";
@@ -19,7 +19,7 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
   const ENTRY_TYPES = ["TEXT", "NUMBER", "CHECKBOX", "TABLE"];
   const readOnly = false;
 
-  // Fetch entries for template if editing
+  // Load template and entries if editing
   useEffect(() => {
     if (template) {
       setName(template.name ?? "");
@@ -31,12 +31,15 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
         try {
           const fetched = await getEntriesBySubject("TEMPLATE", template.id);
           setEntries(
-            fetched.map(e => ({
+            fetched.map((e) => ({
               id: e.id,
               label: e.label || "",
               type: e.type || "TEXT",
               value: e.value || "",
-              previousValues: { [e.type]: e.value || "" }
+              note: e.note || "",
+              subjectType: "TEMPLATE",
+              subjectId: template.id,
+              previousValues: { [e.type]: e.value || "" },
             }))
           );
         } catch (err) {
@@ -51,19 +54,22 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
   }, [template]);
 
   // Add new entry
-  const addEntry = () => setEntries([...entries, { label: "", type: "TEXT", value: "", previousValues: {} }]);
+  const addEntry = () =>
+    setEntries([
+      ...entries,
+      { label: "", type: "TEXT", value: "", note: "", subjectType: "TEMPLATE", subjectId: template?.id ?? null, previousValues: {} },
+    ]);
 
-  // Remove entry (mark for deletion if it has an id)
+  // Remove entry
   const removeEntry = (index) => {
     const entryToRemove = entries[index];
     if (entryToRemove.id) setRemovedEntryIds([...removedEntryIds, entryToRemove.id]);
     setEntries(entries.filter((_, i) => i !== index));
   };
 
-  // Update an entry locally, including type switching
+  // Update entry locally
   const updateEntryLocal = (index, fieldOrEntry, value) => {
     const newEntries = [...entries];
-
     if (typeof fieldOrEntry === "string") {
       if (fieldOrEntry === "type") {
         const oldType = newEntries[index].type;
@@ -78,33 +84,41 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
           else newValue = "";
         }
 
-        newEntries[index].type = value;
-        newEntries[index].value = newValue;
-        newEntries[index].previousValues = previousValues;
+        newEntries[index] = {
+          ...newEntries[index],
+          type: value,
+          value: newValue,
+          previousValues,
+        };
       } else {
-        newEntries[index][fieldOrEntry] = value;
+        newEntries[index] = { ...newEntries[index], [fieldOrEntry]: value };
       }
-    } else {
-      newEntries[index] = fieldOrEntry;
+    } else if (typeof fieldOrEntry === "object") {
+      newEntries[index] = { ...newEntries[index], ...fieldOrEntry };
     }
-
     setEntries(newEntries);
   };
 
-  // Handle submit: delete removed, update existing, create new entries
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
     try {
-      // 1️⃣ Save template first
-      const templatePayload = { name, note, defaultDuration: Number(defaultDuration), color };
+      // Save or update the template first
+      const templatePayload = {
+        name,
+        note,
+        defaultDuration: Number(defaultDuration),
+        color,
+      };
+
       const savedTemplate = isEdit
         ? await updateTemplate(template.id, templatePayload)
         : await createTemplate(userId, templatePayload);
 
-      // 2️⃣ Delete removed entries
+      // Delete removed entries
       for (let entryId of removedEntryIds) {
         try {
           await deleteEntry(entryId);
@@ -114,30 +128,50 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       }
       setRemovedEntryIds([]);
 
-      // 3️⃣ Create or update remaining entries
-      for (let entry of entries) {
-        if (!entry.label.trim()) continue;
+      // Process entries (create or update)
+      const processedEntries = [];
 
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+
+        // Skip empty labels
+        if (!entry.label?.trim()) continue;
+
+        // Build payload for backend
         const payload = {
-          type: entry.type,
-          subjectType: "TEMPLATE",
-          subjectId: savedTemplate.id,
+          id: entry.id, // optional but safe
+          type: entry.type || "TEXT",
+          subjectType: entry.subjectType || "TEMPLATE",
+          subjectId: entry.subjectId || savedTemplate.id, // crucial to avoid 400
           label: entry.label,
-          value: entry.value
+          value: entry.value ?? "",
+          note: entry.note ?? "",
+          orderIndex: i,
         };
 
+        // Update existing entry
         if (entry.id) {
+          const payload = {
+            label: entry.label,
+            value: entry.value ?? "",
+            note: entry.note ?? "",
+            orderIndex: i,
+          };
           await updateEntry(entry.id, payload);
         } else {
+          // Create new entry
           const savedEntry = await createEntry(userId, payload);
-          entry.id = savedEntry.id;
+          entry.id = savedEntry.id; // attach ID for future edits
         }
+
+        processedEntries.push({ ...entry, ...payload });
       }
 
-      // 4️⃣ Optionally refresh entries to keep template updated
+      // Refresh entries attached to the template
       const updatedEntries = await getEntriesBySubject("TEMPLATE", savedTemplate.id);
       savedTemplate.entries = updatedEntries;
 
+      // Notify parent and close modal
       onSaved(savedTemplate);
       onClose();
     } catch (err) {
@@ -147,6 +181,7 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       setSaving(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
@@ -227,7 +262,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
                     ×
                   </button>
                 </div>
-
                 <EntryRenderer
                   entry={entry}
                   onChange={(updatedEntry) => updateEntryLocal(index, updatedEntry)}

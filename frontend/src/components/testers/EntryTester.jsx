@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   createEntry,
   getEntryById,
-  getEntriesByUser,
   getEntriesBySubject,
   updateEntry,
   deleteEntry
@@ -11,18 +10,17 @@ import {
 export default function EntryTester() {
   const [result, setResult] = useState(null);
 
+  // CREATE
   const [createUserId, setCreateUserId] = useState("");
   const [createType, setCreateType] = useState("");
   const [createSubjectType, setCreateSubjectType] = useState("");
   const [createSubjectId, setCreateSubjectId] = useState("");
   const [createLabel, setCreateLabel] = useState("");
   const [createValue, setCreateValue] = useState("");
+  const [createNote, setCreateNote] = useState("");
 
   // GET BY ID
   const [getId, setGetId] = useState("");
-
-  // GET BY USER
-  const [getUserId, setGetUserId] = useState("");
 
   // GET BY SUBJECT
   const [subjectType, setSubjectType] = useState("");
@@ -35,6 +33,7 @@ export default function EntryTester() {
   const [updateSubjectId, setUpdateSubjectId] = useState("");
   const [updateLabel, setUpdateLabel] = useState("");
   const [updateValue, setUpdateValue] = useState("");
+  const [updateNote, setUpdateNote] = useState("");
 
   // DELETE
   const [deleteId, setDeleteId] = useState("");
@@ -60,7 +59,7 @@ export default function EntryTester() {
         <div className="flex gap-2">
           <input
             className="border px-2 py-1 rounded w-full"
-            placeholder="Type (e.g. TEXT, NUMBER, CHECKBOX, TABLE)"
+            placeholder="Type (TEXT, NUMBER, CHECKBOX, TABLE)"
             value={createType}
             onChange={(e) => setCreateType(e.target.value)}
           />
@@ -93,6 +92,13 @@ export default function EntryTester() {
           onChange={(e) => setCreateValue(e.target.value)}
         />
 
+        <input
+          className="border px-2 py-1 rounded w-full"
+          placeholder="Note"
+          value={createNote}
+          onChange={(e) => setCreateNote(e.target.value)}
+        />
+
         <button
           className={`${buttonClasses} bg-blue-600 text-white hover:bg-blue-700`}
           onClick={async () => {
@@ -102,7 +108,8 @@ export default function EntryTester() {
                 subjectType: createSubjectType,
                 subjectId: createSubjectId,
                 label: createLabel,
-                value: createValue
+                value: createValue,
+                note: createNote // added note
               });
               setResult(res);
             } catch (err) {
@@ -130,32 +137,6 @@ export default function EntryTester() {
           onClick={async () => {
             try {
               const res = await getEntryById(getId);
-              setResult(res);
-            } catch (err) {
-              setResult({ error: err.response?.data || err.message });
-            }
-          }}
-        >
-          Fetch
-        </button>
-      </div>
-
-      {/* GET BY USER */}
-      <div className={boxClasses}>
-        <h2 className="font-semibold">Get Entries by User</h2>
-
-        <input
-          className="border px-2 py-1 rounded w-full"
-          placeholder="User ID"
-          value={getUserId}
-          onChange={(e) => setGetUserId(e.target.value)}
-        />
-
-        <button
-          className={`${buttonClasses} bg-purple-600 text-white hover:bg-purple-700`}
-          onClick={async () => {
-            try {
-              const res = await getEntriesByUser(getUserId);
               setResult(res);
             } catch (err) {
               setResult({ error: err.response?.data || err.message });
@@ -225,6 +206,13 @@ export default function EntryTester() {
           onChange={(e) => setUpdateValue(e.target.value)}
         />
 
+        <input
+          className="border px-2 py-1 rounded w-full"
+          placeholder="Note"
+          value={updateNote}
+          onChange={(e) => setUpdateNote(e.target.value)}
+        />
+
         <button
           className={`${buttonClasses} bg-yellow-500 text-white hover:bg-yellow-600`}
           onClick={async () => {
@@ -234,7 +222,8 @@ export default function EntryTester() {
                 subjectType: updateSubjectType,
                 subjectId: updateSubjectId,
                 label: updateLabel,
-                value: updateValue
+                value: updateValue,
+                note: updateNote // added note
               });
               setResult(res);
             } catch (err) {
