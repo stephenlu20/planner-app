@@ -1,54 +1,41 @@
 import api from "./axios";
 
-export const createEntry = async (userId, {
-  type,
-  subjectType,
-  subjectId,
-  label,
-  value
-}) => {
+// CREATE ENTRY
+export const createEntry = async (userId, { type, subjectType, subjectId, label, value, note }) => {
   const res = await api.post(`/entries/user/${userId}`, {
     type,
     subjectType,
     subjectId,
     label,
-    value
+    value,
+    note,
   });
   return res.data;
 };
 
+// GET ENTRY BY ID
 export const getEntryById = async (entryId) => {
   const res = await api.get(`/entries/${entryId}`);
   return res.data;
 };
 
-export const getEntriesByUser = async (userId) => {
-  const res = await api.get(`/entries/user/${userId}`);
-  return res.data;
-};
-
+// GET ENTRIES BY SUBJECT
 export const getEntriesBySubject = async (subjectType, subjectId) => {
   const res = await api.get(`/entries/subject/${subjectType}/${subjectId}`);
   return res.data;
 };
 
-export const updateEntry = async (entryId, {
-  type,
-  subjectType,
-  subjectId,
-  label,
-  value
-}) => {
+// UPDATE ENTRY (only editable fields)
+export const updateEntry = async (entryId, { label, value, note }) => {
   const res = await api.put(`/entries/${entryId}`, {
-    type,
-    subjectType,
-    subjectId,
     label,
-    value
+    value,
+    note,
   });
   return res.data;
 };
 
+// DELETE ENTRY
 export const deleteEntry = async (entryId) => {
   await api.delete(`/entries/${entryId}`);
 };
