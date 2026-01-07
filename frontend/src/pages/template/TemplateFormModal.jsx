@@ -1,13 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, readOnly } from "react";
 import { createTemplate, updateTemplate } from "../../api/templateApi";
-import { createEntry } from "../../api/entryApi";
+import { createEntry, updateEntry, deleteEntry, getEntriesBySubject } from "../../api/entryApi";
+import EntryRenderer from "../../components/entries/EntryRenderer";
 
-export default function TemplateFormModal({
-  userId,
-  template,
-  onClose,
-  onSaved
-}) {
+export default function TemplateFormModal({ userId, template, onClose, onSaved }) {
   const isEdit = Boolean(template);
 
   const [name, setName] = useState("");
@@ -15,63 +11,132 @@ export default function TemplateFormModal({
   const [defaultDuration, setDefaultDuration] = useState(30);
   const [color, setColor] = useState("BLUE");
   const [entries, setEntries] = useState([]);
+  const [removedEntryIds, setRemovedEntryIds] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   const COLORS = ["BLUE", "GREEN", "RED", "YELLOW", "PURPLE"];
-  const ENTRY_TYPES = ["TEXT", "NUMBER", "TABLE", "CHECKBOX"];
+  const ENTRY_TYPES = ["TEXT", "NUMBER", "CHECKBOX", "TABLE"];
+  const readOnly = false;
 
-  // Load template data if editing
+  // Fetch entries for template if editing
   useEffect(() => {
     if (template) {
       setName(template.name ?? "");
       setNote(template.note ?? "");
       setDefaultDuration(template.defaultDuration ?? 30);
       setColor(template.color ?? "BLUE");
-      // If template has entries, load them for editing
-      setEntries(template.entries?.map(e => ({
-        label: e.label || "",
-        type: e.type || "TEXT",
-        value: e.value || ""
-      })) || []);
+
+      (async () => {
+        try {
+          const fetched = await getEntriesBySubject("TEMPLATE", template.id);
+          setEntries(
+            fetched.map(e => ({
+              id: e.id,
+              label: e.label || "",
+              type: e.type || "TEXT",
+              value: e.value || "",
+              previousValues: { [e.type]: e.value || "" }
+            }))
+          );
+        } catch (err) {
+          console.error("Failed to fetch entries", err);
+          setEntries([]);
+        }
+      })();
+    } else {
+      setEntries([]);
     }
+    setRemovedEntryIds([]);
   }, [template]);
 
-  // Entry manipulation
-  const addEntry = () => setEntries([...entries, { label: "", value: "", type: "TEXT" }]);
-  const updateEntry = (index, field, value) => {
+  // Add new entry
+  const addEntry = () => setEntries([...entries, { label: "", type: "TEXT", value: "", previousValues: {} }]);
+
+  // Remove entry (mark for deletion if it has an id)
+  const removeEntry = (index) => {
+    const entryToRemove = entries[index];
+    if (entryToRemove.id) setRemovedEntryIds([...removedEntryIds, entryToRemove.id]);
+    setEntries(entries.filter((_, i) => i !== index));
+  };
+
+  // Update an entry locally, including type switching
+  const updateEntryLocal = (index, fieldOrEntry, value) => {
     const newEntries = [...entries];
-    newEntries[index][field] = value;
+
+    if (typeof fieldOrEntry === "string") {
+      if (fieldOrEntry === "type") {
+        const oldType = newEntries[index].type;
+        const oldValue = newEntries[index].value;
+        const previousValues = newEntries[index].previousValues || {};
+        previousValues[oldType] = oldValue;
+
+        let newValue = previousValues[value];
+        if (newValue === undefined) {
+          if (value === "CHECKBOX") newValue = JSON.stringify([]);
+          else if (value === "TABLE") newValue = JSON.stringify({ rows: 1, cols: 1, cells: [[""]] });
+          else newValue = "";
+        }
+
+        newEntries[index].type = value;
+        newEntries[index].value = newValue;
+        newEntries[index].previousValues = previousValues;
+      } else {
+        newEntries[index][fieldOrEntry] = value;
+      }
+    } else {
+      newEntries[index] = fieldOrEntry;
+    }
+
     setEntries(newEntries);
   };
-  const removeEntry = (index) => setEntries(entries.filter((_, i) => i !== index));
 
-  // Submit handler
+  // Handle submit: delete removed, update existing, create new entries
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
     try {
-      // Save template first
-      const payload = { name, note, defaultDuration: Number(defaultDuration), color };
+      // 1️⃣ Save template first
+      const templatePayload = { name, note, defaultDuration: Number(defaultDuration), color };
       const savedTemplate = isEdit
-        ? await updateTemplate(template.id, payload)
-        : await createTemplate(userId, payload);
+        ? await updateTemplate(template.id, templatePayload)
+        : await createTemplate(userId, templatePayload);
 
-      // Save entries sequentially
+      // 2️⃣ Delete removed entries
+      for (let entryId of removedEntryIds) {
+        try {
+          await deleteEntry(entryId);
+        } catch (err) {
+          console.error("Failed to delete entry:", err);
+        }
+      }
+      setRemovedEntryIds([]);
+
+      // 3️⃣ Create or update remaining entries
       for (let entry of entries) {
-        // Skip empty labels
         if (!entry.label.trim()) continue;
 
-        await createEntry(userId, {
+        const payload = {
           type: entry.type,
           subjectType: "TEMPLATE",
           subjectId: savedTemplate.id,
           label: entry.label,
           value: entry.value
-        });
+        };
+
+        if (entry.id) {
+          await updateEntry(entry.id, payload);
+        } else {
+          const savedEntry = await createEntry(userId, payload);
+          entry.id = savedEntry.id;
+        }
       }
+
+      // 4️⃣ Optionally refresh entries to keep template updated
+      const updatedEntries = await getEntriesBySubject("TEMPLATE", savedTemplate.id);
+      savedTemplate.entries = updatedEntries;
 
       onSaved(savedTemplate);
       onClose();
@@ -113,9 +178,7 @@ export default function TemplateFormModal({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Default Duration (minutes)
-            </label>
+            <label className="block text-sm font-medium mb-1">Default Duration (minutes)</label>
             <input
               type="number"
               min={0}
@@ -132,9 +195,7 @@ export default function TemplateFormModal({
               onChange={(e) => setColor(e.target.value)}
               className="w-full border rounded px-3 py-2 cursor-pointer"
             >
-              {COLORS.map(c => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+              {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
 
@@ -142,42 +203,39 @@ export default function TemplateFormModal({
           <div className="mt-4 border-t pt-4">
             <h3 className="font-medium mb-2">Entries</h3>
             {entries.map((entry, index) => (
-              <div key={index} className="flex gap-2 items-center mb-2">
-                {/* Label */}
-                <input
-                  value={entry.label}
-                  onChange={(e) => updateEntry(index, "label", e.target.value)}
-                  placeholder="Label"
-                  className="border rounded px-2 py-1 flex-1"
-                  required
+              <div key={index} className="flex flex-col gap-2 mb-2">
+                <div className="flex gap-2 items-center">
+                  <input
+                    value={entry.label}
+                    onChange={(e) => updateEntryLocal(index, "label", e.target.value)}
+                    placeholder="Label"
+                    className="border rounded px-2 py-1 flex-1"
+                    required
+                  />
+                  <select
+                    value={entry.type}
+                    onChange={(e) => updateEntryLocal(index, "type", e.target.value)}
+                    className="border rounded px-2 py-1"
+                  >
+                    {ENTRY_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => removeEntry(index)}
+                    className="px-2 py-1 text-red-500 font-bold"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <EntryRenderer
+                  entry={entry}
+                  onChange={(updatedEntry) => updateEntryLocal(index, updatedEntry)}
+                  readOnly={readOnly}
                 />
-                {/* Type */}
-                <select
-                  value={entry.type}
-                  onChange={(e) => updateEntry(index, "type", e.target.value)}
-                  className="border rounded px-2 py-1"
-                >
-                  {ENTRY_TYPES.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
-                {/* Value */}
-                <input
-                  value={entry.value}
-                  onChange={(e) => updateEntry(index, "value", e.target.value)}
-                  placeholder="Value"
-                  className="border rounded px-2 py-1 flex-1"
-                />
-                {/* Remove button */}
-                <button
-                  type="button"
-                  onClick={() => removeEntry(index)}
-                  className="px-2 py-1 text-red-500 font-bold"
-                >
-                  ×
-                </button>
               </div>
             ))}
+
             <button
               type="button"
               onClick={addEntry}

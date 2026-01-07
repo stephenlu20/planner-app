@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, readOnly } from "react";
 
-export default function TableEntry({ entry, onChange }) {
+export default function TableEntry({ entry, onChange, readOnly }) {
   const [table, setTable] = useState({ rows: 1, cols: 1, cells: [[""]] });
 
   useEffect(() => {
@@ -42,6 +42,7 @@ export default function TableEntry({ entry, onChange }) {
                 <td key={cIdx} className="border p-1">
                   <input
                     value={cell}
+                    disabled={readOnly}
                     onChange={(e) => updateCell(rIdx, cIdx, e.target.value)}
                     className="w-full"
                   />
@@ -51,10 +52,16 @@ export default function TableEntry({ entry, onChange }) {
           ))}
         </tbody>
       </table>
-      <div className="flex gap-2">
-        <button type="button" onClick={addRow} className="text-sm text-blue-500">+ Row</button>
-        <button type="button" onClick={addCol} className="text-sm text-blue-500">+ Column</button>
-      </div>
+      {!readOnly && (
+        <div className="flex gap-2">
+          <button type="button" onClick={addRow} disabled={readOnly} className="text-sm text-blue-500">
+            + Row
+          </button>
+          <button type="button" onClick={addCol} disabled={readOnly} className="text-sm text-blue-500">
+            + Column
+          </button>
+        </div>
+      )}
     </div>
   );
 }
