@@ -11,39 +11,39 @@ import java.util.UUID;
 @Service
 public class EntryService {
 
-    private final EntryRepository recordRepository;
+    private final EntryRepository entryRepository;
 
-    public EntryService(EntryRepository recordRepository) {
-        this.recordRepository = recordRepository;
+    public EntryService(EntryRepository entryRepository) {
+        this.entryRepository = entryRepository;
     }
 
-    public Entry createRecord(Entry record) {
-        return recordRepository.save(record);
+    public Entry createEntry(Entry entry) {
+        return entryRepository.save(entry);
     }
 
-    public Entry updateRecord(UUID recordId, Entry updatedRecord) {
-        Entry existing = recordRepository.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
-        existing.setLabel(updatedRecord.getLabel());
-        existing.setValue(updatedRecord.getValue());
-        existing.setType(updatedRecord.getType());
-        return recordRepository.save(existing);
+    public Entry updateEntry(UUID entryId, Entry updatedEntry) {
+        Entry existing = entryRepository.findById(entryId)
+                .orElseThrow(() -> new RuntimeException("Entry not found"));
+        existing.setLabel(updatedEntry.getLabel());
+        existing.setValue(updatedEntry.getValue());
+        existing.setType(updatedEntry.getType());
+        return entryRepository.save(existing);
     }
 
-    public void deleteRecord(UUID recordId) {
-        recordRepository.deleteById(recordId);
+    public void deleteEntry(UUID entryId) {
+        entryRepository.deleteById(entryId);
     }
 
-    public Entry getRecord(UUID recordId) {
-        return recordRepository.findById(recordId)
-                .orElseThrow(() -> new RuntimeException("Record not found"));
+    public Entry getEntry(UUID entryId) {
+        return entryRepository.findById(entryId)
+                .orElseThrow(() -> new RuntimeException("Entry not found"));
     }
 
-    public List<Entry> getRecordsByUser(Long userId) {
-        return recordRepository.findByUserId(userId);
+    public List<Entry> getEntrysByUser(Long userId) {
+        return entryRepository.findByUserId(userId);
     }
 
-    public List<Entry> getRecordsBySubject(EntrySubjectType subjectType, UUID subjectId) {
-        return recordRepository.findBySubjectTypeAndSubjectId(subjectType, subjectId);
+    public List<Entry> getEntrysBySubject(EntrySubjectType subjectType, UUID subjectId) {
+        return entryRepository.findBySubjectTypeAndSubjectId(subjectType, subjectId);
     }
 }

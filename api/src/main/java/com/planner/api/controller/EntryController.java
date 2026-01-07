@@ -16,40 +16,40 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173", "http://[::1]:5173"})
 public class EntryController {
 
-    private final EntryService recordService;
+    private final EntryService entryService;
     private final UserService userService;
 
-    public EntryController(EntryService recordService, UserService userService) {
-        this.recordService = recordService;
+    public EntryController(EntryService entryService, UserService userService) {
+        this.entryService = entryService;
         this.userService = userService;
     }
 
     @PostMapping("/user/{userId}")
-    public EntryResponseDTO createRecord(@PathVariable Long userId,
+    public EntryResponseDTO createEntry(@PathVariable Long userId,
                                           @RequestBody EntryRequestDTO dto) {
         var user = userService.getUser(userId);
-        Entry record = new Entry(user, dto.getType(), dto.getSubjectType(), dto.getSubjectId(),
+        Entry entry = new Entry(user, dto.getType(), dto.getSubjectType(), dto.getSubjectId(),
                 dto.getLabel(), dto.getValue());
-        Entry saved = recordService.createRecord(record);
+        Entry saved = entryService.createEntry(entry);
         return toResponseDTO(saved);
     }
 
-    @GetMapping("/{recordId}")
-    public EntryResponseDTO getRecord(@PathVariable UUID recordId) {
-        return toResponseDTO(recordService.getRecord(recordId));
+    @GetMapping("/{entryId}")
+    public EntryResponseDTO getEntry(@PathVariable UUID entryId) {
+        return toResponseDTO(entryService.getEntry(entryId));
     }
 
     @GetMapping("/user/{userId}")
-    public List<EntryResponseDTO> getRecordsByUser(@PathVariable Long userId) {
-        return recordService.getRecordsByUser(userId).stream()
+    public List<EntryResponseDTO> getEntrysByUser(@PathVariable Long userId) {
+        return entryService.getEntrysByUser(userId).stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/subject/{subjectType}/{subjectId}")
-    public List<EntryResponseDTO> getRecordsBySubject(@PathVariable String subjectType,
+    public List<EntryResponseDTO> getEntrysBySubject(@PathVariable String subjectType,
                                                        @PathVariable UUID subjectId) {
-        return recordService.getRecordsBySubject(
+        return entryService.getEntrysBySubject(
                         Enum.valueOf(com.planner.api.entity.EntrySubjectType.class, subjectType.toUpperCase()),
                         subjectId)
                 .stream()
@@ -57,29 +57,29 @@ public class EntryController {
                 .collect(Collectors.toList());
     }
 
-    @PutMapping("/{recordId}")
-    public EntryResponseDTO updateRecord(@PathVariable UUID recordId,
+    @PutMapping("/{entryId}")
+    public EntryResponseDTO updateEntry(@PathVariable UUID entryId,
                                           @RequestBody EntryRequestDTO dto) {
         Entry updated = new Entry(null, dto.getType(), dto.getSubjectType(), dto.getSubjectId(),
                 dto.getLabel(), dto.getValue());
-        return toResponseDTO(recordService.updateRecord(recordId, updated));
+        return toResponseDTO(entryService.updateEntry(entryId, updated));
     }
 
-    @DeleteMapping("/{recordId}")
-    public void deleteRecord(@PathVariable UUID recordId) {
-        recordService.deleteRecord(recordId);
+    @DeleteMapping("/{entryId}")
+    public void deleteEntry(@PathVariable UUID entryId) {
+        entryService.deleteEntry(entryId);
     }
 
-    private EntryResponseDTO toResponseDTO(Entry record) {
+    private EntryResponseDTO toResponseDTO(Entry entry) {
         EntryResponseDTO dto = new EntryResponseDTO();
-        dto.setId(record.getId());
-        dto.setUserId(record.getUser().getId());
-        dto.setType(record.getType());
-        dto.setSubjectType(record.getSubjectType());
-        dto.setSubjectId(record.getSubjectId());
-        dto.setLabel(record.getLabel());
-        dto.setValue(record.getValue());
-        dto.setCreatedAt(record.getCreatedAt());
+        dto.setId(entry.getId());
+        dto.setUserId(entry.getUser().getId());
+        dto.setType(entry.getType());
+        dto.setSubjectType(entry.getSubjectType());
+        dto.setSubjectId(entry.getSubjectId());
+        dto.setLabel(entry.getLabel());
+        dto.setValue(entry.getValue());
+        dto.setCreatedAt(entry.getCreatedAt());
         return dto;
     }
 }

@@ -52,7 +52,7 @@ Represents structured data attached to an Event or Template.
   - Optional metadata (units, table columns, constraints)  
 
 **Purpose:**
-- Record quantitative or qualitative details  
+- Entry quantitative or qualitative details  
 - Support journaling  
 - Enable analytics and future visualization
 

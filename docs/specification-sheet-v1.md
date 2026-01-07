@@ -10,7 +10,7 @@
 
 A multi-calendar planner and habit tracking application that combines **structured logging**, **hierarchical events**, and **journaling**.
 
-The application enables users to plan activities, record meaningful details, and reflect on progress over time without enforcing rigid schemas. Structure is optional, user-defined, and transparent.
+The application enables users to plan activities, entry meaningful details, and reflect on progress over time without enforcing rigid schemas. Structure is optional, user-defined, and transparent.
 
 ---
 
@@ -55,7 +55,7 @@ A planned or completed activity on a calendar.
 
 ### Log
 
-A structured piece of recorded data associated with an Event or Template.
+A structured piece of entryed data associated with an Event or Template.
 
 Examples include:
 
@@ -176,7 +176,7 @@ Each Event may contain:
 - One optional free-form note, used for journaling or reflection
 - Zero or more **Logs**, which store structured data such as durations, numeric values, checkbox lists, or tables
 
-Logs represent recorded details that matter to the user and may later be used for analytics or visualization. Logs are optional and user-defined.
+Logs represent entryed details that matter to the user and may later be used for analytics or visualization. Logs are optional and user-defined.
 
 In addition to Calendars and Events, a User may create **Templates**. Templates define reusable, hierarchical structures that mirror the shape of Events but do not exist on the calendar timeline.
 
@@ -243,7 +243,7 @@ This model allows users to plan simple tasks or highly detailed activities using
 
 ## Summary
 
-This application is designed as a **truthful record of intention and action**, balancing planning, execution, and reflection without forcing users into rigid patterns
+This application is designed as a **truthful entry of intention and action**, balancing planning, execution, and reflection without forcing users into rigid patterns
 - Template versioning or bulk updates
 
 ---

@@ -19,7 +19,7 @@ export default function TemplateFormModal({
   const [error, setError] = useState(null);
 
   const COLORS = ["BLUE", "GREEN", "RED", "YELLOW", "PURPLE"];
-  const ENTRY_TYPES = ["TEXT", "NUMBER", "DURATION", "TABLE", "CHECKBOX"];
+  const ENTRY_TYPES = ["TEXT", "NUMBER", "TABLE", "CHECKBOX"];
 
   // Load template data if editing
   useEffect(() => {
@@ -143,6 +143,7 @@ export default function TemplateFormModal({
             <h3 className="font-medium mb-2">Entries</h3>
             {entries.map((entry, index) => (
               <div key={index} className="flex gap-2 items-center mb-2">
+                {/* Label */}
                 <input
                   value={entry.label}
                   onChange={(e) => updateEntry(index, "label", e.target.value)}
@@ -150,21 +151,24 @@ export default function TemplateFormModal({
                   className="border rounded px-2 py-1 flex-1"
                   required
                 />
+                {/* Type */}
                 <select
                   value={entry.type}
                   onChange={(e) => updateEntry(index, "type", e.target.value)}
                   className="border rounded px-2 py-1"
                 >
+                  {ENTRY_TYPES.map(t => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
+                {/* Value */}
                 <input
                   value={entry.value}
                   onChange={(e) => updateEntry(index, "value", e.target.value)}
                   placeholder="Value"
                   className="border rounded px-2 py-1 flex-1"
                 />
-                  {ENTRY_TYPES.map(t => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                {/* Remove button */}
                 <button
                   type="button"
                   onClick={() => removeEntry(index)}

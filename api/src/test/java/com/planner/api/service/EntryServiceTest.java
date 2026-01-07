@@ -17,110 +17,110 @@ import static org.mockito.Mockito.*;
 
 class EntryServiceTest {
 
-    private EntryRepository recordRepository;
-    private EntryService recordService;
+    private EntryRepository entryRepository;
+    private EntryService entryService;
     private User dummyUser;
-    private UUID recordId;
+    private UUID entryId;
 
     @BeforeEach
     void setUp() {
-        recordRepository = mock(EntryRepository.class);
-        recordService = new EntryService(recordRepository);
+        entryRepository = mock(EntryRepository.class);
+        entryService = new EntryService(entryRepository);
 
         dummyUser = new User("Test User");
         dummyUser.setId(1L);
-        recordId = UUID.randomUUID();
+        entryId = UUID.randomUUID();
     }
 
     @Test
-    void testCreateRecord() {
-        Entry record = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label", "Value");
-        when(recordRepository.save(record)).thenReturn(record);
+    void testCreateEntry() {
+        Entry entry = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label", "Value");
+        when(entryRepository.save(entry)).thenReturn(entry);
 
-        Entry saved = recordService.createRecord(record);
+        Entry saved = entryService.createEntry(entry);
 
         assertEquals("Label", saved.getLabel());
         assertEquals("Value", saved.getValue());
-        verify(recordRepository, times(1)).save(record);
+        verify(entryRepository, times(1)).save(entry);
     }
 
     @Test
-    void testGetRecordExists() {
-        Entry record = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label", "Value");
-        when(recordRepository.findById(recordId)).thenReturn(Optional.of(record));
+    void testGetEntryExists() {
+        Entry entry = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label", "Value");
+        when(entryRepository.findById(entryId)).thenReturn(Optional.of(entry));
 
-        Entry found = recordService.getRecord(recordId);
+        Entry found = entryService.getEntry(entryId);
 
         assertEquals("Label", found.getLabel());
-        verify(recordRepository, times(1)).findById(recordId);
+        verify(entryRepository, times(1)).findById(entryId);
     }
 
     @Test
-    void testGetRecordNotFound() {
-        when(recordRepository.findById(recordId)).thenReturn(Optional.empty());
+    void testGetEntryNotFound() {
+        when(entryRepository.findById(entryId)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> recordService.getRecord(recordId));
+        assertThrows(RuntimeException.class, () -> entryService.getEntry(entryId));
     }
 
     @Test
-    void testUpdateRecord() {
+    void testUpdateEntry() {
         Entry existing = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Old", "OldValue");
-        when(recordRepository.findById(recordId)).thenReturn(Optional.of(existing));
-        when(recordRepository.save(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(entryRepository.findById(entryId)).thenReturn(Optional.of(existing));
+        when(entryRepository.save(any(Entry.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Entry updated = new Entry(null, EntryType.NUMBER, EntrySubjectType.EVENT, UUID.randomUUID(), "New", "NewValue");
 
-        Entry result = recordService.updateRecord(recordId, updated);
+        Entry result = entryService.updateEntry(entryId, updated);
 
         assertEquals("New", result.getLabel());
         assertEquals("NewValue", result.getValue());
         assertEquals(EntryType.NUMBER, result.getType());
-        verify(recordRepository, times(1)).findById(recordId);
-        verify(recordRepository, times(1)).save(existing);
+        verify(entryRepository, times(1)).findById(entryId);
+        verify(entryRepository, times(1)).save(existing);
     }
 
     @Test
-    void testUpdateRecordNotFound() {
-        when(recordRepository.findById(recordId)).thenReturn(Optional.empty());
+    void testUpdateEntryNotFound() {
+        when(entryRepository.findById(entryId)).thenReturn(Optional.empty());
         Entry updated = new Entry(null, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label", "Value");
 
-        assertThrows(RuntimeException.class, () -> recordService.updateRecord(recordId, updated));
+        assertThrows(RuntimeException.class, () -> entryService.updateEntry(entryId, updated));
     }
 
     @Test
-    void testDeleteRecord() {
-        doNothing().when(recordRepository).deleteById(recordId);
+    void testDeleteEntry() {
+        doNothing().when(entryRepository).deleteById(entryId);
 
-        recordService.deleteRecord(recordId);
+        entryService.deleteEntry(entryId);
 
-        verify(recordRepository, times(1)).deleteById(recordId);
+        verify(entryRepository, times(1)).deleteById(entryId);
     }
 
     @Test
-    void testGetRecordsByUser() {
+    void testGetEntrysByUser() {
         Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Label1", "Value1");
         Entry r2 = new Entry(dummyUser, EntryType.NUMBER, EntrySubjectType.TEMPLATE, UUID.randomUUID(), "Label2", "Value2");
 
-        when(recordRepository.findByUserId(dummyUser.getId())).thenReturn(List.of(r1, r2));
+        when(entryRepository.findByUserId(dummyUser.getId())).thenReturn(List.of(r1, r2));
 
-        List<Entry> records = recordService.getRecordsByUser(dummyUser.getId());
+        List<Entry> entries = entryService.getEntrysByUser(dummyUser.getId());
 
-        assertEquals(2, records.size());
-        verify(recordRepository, times(1)).findByUserId(dummyUser.getId());
+        assertEquals(2, entries.size());
+        verify(entryRepository, times(1)).findByUserId(dummyUser.getId());
     }
 
     @Test
-    void testGetRecordsBySubject() {
+    void testGetEntrysBySubject() {
         UUID subjectId = UUID.randomUUID();
         Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, subjectId, "Label1", "Value1");
 
-        when(recordRepository.findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId))
+        when(entryRepository.findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId))
                 .thenReturn(List.of(r1));
 
-        List<Entry> records = recordService.getRecordsBySubject(EntrySubjectType.EVENT, subjectId);
+        List<Entry> entries = entryService.getEntrysBySubject(EntrySubjectType.EVENT, subjectId);
 
-        assertEquals(1, records.size());
-        assertEquals("Label1", records.get(0).getLabel());
-        verify(recordRepository, times(1)).findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId);
+        assertEquals(1, entries.size());
+        assertEquals("Label1", entries.get(0).getLabel());
+        verify(entryRepository, times(1)).findBySubjectTypeAndSubjectId(EntrySubjectType.EVENT, subjectId);
     }
 }

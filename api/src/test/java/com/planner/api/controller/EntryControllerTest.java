@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EntryControllerTest {
 
     private MockMvc mockMvc;
-    private EntryService recordService;
+    private EntryService entryService;
     private UserService userService;
     private ObjectMapper objectMapper;
 
@@ -33,9 +33,9 @@ class EntryControllerTest {
 
     @BeforeEach
     void setUp() {
-        recordService = mock(EntryService.class);
+        entryService = mock(EntryService.class);
         userService = mock(UserService.class);
-        EntryController controller = new EntryController(recordService, userService);
+        EntryController controller = new EntryController(entryService, userService);
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         objectMapper = new ObjectMapper();
 
@@ -45,7 +45,7 @@ class EntryControllerTest {
     }
 
     @Test
-    void testCreateRecord() throws Exception {
+    void testCreateEntry() throws Exception {
         EntryRequestDTO dto = new EntryRequestDTO();
         dto.setType(EntryType.TEXT);
         dto.setSubjectType(EntrySubjectType.EVENT);
@@ -57,9 +57,9 @@ class EntryControllerTest {
                 dto.getSubjectId(), dto.getLabel(), dto.getValue());
 
         when(userService.getUser(userId)).thenReturn(dummyUser);
-        when(recordService.createRecord(any(Entry.class))).thenReturn(saved);
+        when(entryService.createEntry(any(Entry.class))).thenReturn(saved);
 
-        mockMvc.perform(post("/records/user/" + userId)
+        mockMvc.perform(post("/entries/user/" + userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -67,17 +67,17 @@ class EntryControllerTest {
                 .andExpect(jsonPath("$.value").value("100 minutes"))
                 .andExpect(jsonPath("$.userId").value(userId.toString()));
 
-        verify(recordService, times(1)).createRecord(any(Entry.class));
+        verify(entryService, times(1)).createEntry(any(Entry.class));
     }
 
     @Test
-    void testGetRecordsByUser() throws Exception {
+    void testGetEntrysByUser() throws Exception {
         Entry r1 = new Entry(dummyUser, EntryType.TEXT, EntrySubjectType.EVENT, UUID.randomUUID(), "Duration", "100");
-        Entry r2 = new Entry(dummyUser, EntryType.DURATION, EntrySubjectType.TEMPLATE, UUID.randomUUID(), "Default", "30");
+        Entry r2 = new Entry(dummyUser, EntryType.NUMBER, EntrySubjectType.TEMPLATE, UUID.randomUUID(), "Default", "30");
 
-        when(recordService.getRecordsByUser(userId)).thenReturn(List.of(r1, r2));
+        when(entryService.getEntrysByUser(userId)).thenReturn(List.of(r1, r2));
 
-        mockMvc.perform(get("/records/user/" + userId))
+        mockMvc.perform(get("/entries/user/" + userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].label").value("Duration"))
                 .andExpect(jsonPath("$[1].label").value("Default"));
