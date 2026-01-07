@@ -44,6 +44,9 @@ export default function CheckboxEntry({ entry, onChange, readOnly }) {
 
   return (
     <div className="space-y-2">
+      {/* Label (display only in read-only mode) */}
+      {readOnly && <div className="font-medium">{entry.label}</div>}
+      
       {items.map((item, idx) => (
         <div key={idx} className="flex gap-2 items-center">
           <input type="checkbox" checked={item.checked} disabled={readOnly} onChange={() => toggleItem(idx)} />
@@ -52,7 +55,7 @@ export default function CheckboxEntry({ entry, onChange, readOnly }) {
             value={item.label}
             disabled={readOnly}
             onChange={(e) => updateLabel(idx, e.target.value)}
-            className="border px-2 py-1 flex-1"
+            className={`border px-2 py-1 flex-1 ${readOnly ? "bg-gray-100" : "bg-white cursor-text"}`}
           />
           {!readOnly && (
             <button onClick={() => removeItem(idx)} className="text-red-500">
@@ -68,12 +71,13 @@ export default function CheckboxEntry({ entry, onChange, readOnly }) {
         </button>
       )}
 
+      {/* Note input */}
       <textarea
-        value={note}
+        value={entry.note || ""}
         onChange={handleNoteChange}
         placeholder="Note (optional)"
         disabled={readOnly}
-        className="w-full border rounded px-2 py-1 mt-2"
+        className={`border rounded px-2 py-1 w-full ${readOnly ? "bg-gray-100" : "bg-white cursor-text"}`}
       />
     </div>
   );
