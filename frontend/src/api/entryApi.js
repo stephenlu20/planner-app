@@ -7,7 +7,7 @@ export const createEntry = async (userId, {
   label,
   value
 }) => {
-  const res = await api.post(`/records/user/${userId}`, {
+  const res = await api.post(`/entries/user/${userId}`, {
     type,
     subjectType,
     subjectId,
@@ -17,29 +17,29 @@ export const createEntry = async (userId, {
   return res.data;
 };
 
-export const getEntryById = async (recordId) => {
-  const res = await api.get(`/records/${recordId}`);
+export const getEntryById = async (entryId) => {
+  const res = await api.get(`/entries/${entryId}`);
   return res.data;
 };
 
 export const getEntriesByUser = async (userId) => {
-  const res = await api.get(`/records/user/${userId}`);
+  const res = await api.get(`/entries/user/${userId}`);
   return res.data;
 };
 
 export const getEntriesBySubject = async (subjectType, subjectId) => {
-  const res = await api.get(`/records/subject/${subjectType}/${subjectId}`);
+  const res = await api.get(`/entries/subject/${subjectType}/${subjectId}`);
   return res.data;
 };
 
-export const updateEntry = async (recordId, {
+export const updateEntry = async (entryId, {
   type,
   subjectType,
   subjectId,
   label,
   value
 }) => {
-  const res = await api.put(`/records/${recordId}`, {
+  const res = await api.put(`/entries/${entryId}`, {
     type,
     subjectType,
     subjectId,
@@ -49,6 +49,6 @@ export const updateEntry = async (recordId, {
   return res.data;
 };
 
-export const deleteEntry = async (recordId) => {
-  await api.delete(`/records/${recordId}`);
+export const deleteEntry = async (entryId) => {
+  await api.delete(`/entries/${entryId}`);
 };
