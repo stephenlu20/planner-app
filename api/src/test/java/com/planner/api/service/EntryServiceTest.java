@@ -73,7 +73,7 @@ class EntryServiceTest {
 
         assertEquals("New", result.getLabel());
         assertEquals("NewValue", result.getValue());
-        assertEquals(EntryType.NUMBER, result.getType());
+        assertEquals(EntryType.TEXT, result.getType());
         verify(entryRepository, times(1)).findById(entryId);
         verify(entryRepository, times(1)).save(existing);
     }

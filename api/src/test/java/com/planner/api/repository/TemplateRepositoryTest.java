@@ -31,9 +31,9 @@ class TemplateRepositoryTest {
         userRepository.save(user1);
         userRepository.save(user2);
 
-        Template t1 = new Template(null, "Template1", "Note1", user1, "Red", 30);
-        Template t2 = new Template(null, "Template2", "Note2", user1, "Blue", 45);
-        Template t3 = new Template(null, "Template3", "Note3", user2, "Green", 60);
+        Template t1 = new Template(null, "Template1", "Note1", user1);
+        Template t2 = new Template(null, "Template2", "Note2", user1);
+        Template t3 = new Template(null, "Template3", "Note3", user2);
 
         templateRepository.save(t1);
         templateRepository.save(t2);

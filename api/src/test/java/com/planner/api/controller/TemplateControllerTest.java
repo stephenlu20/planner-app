@@ -48,11 +48,9 @@ class TemplateControllerTest {
         TemplateRequestDTO dto = new TemplateRequestDTO();
         dto.setName("Template 1");
         dto.setNote("This is a note");
-        dto.setColor("Blue");
-        dto.setDefaultDuration(30);
 
         Template saved = new Template(UUID.randomUUID(), "Template 1", "This is a note",
-                dummyUser, "Blue", 30);
+                dummyUser);
 
         when(userService.getUser(userId)).thenReturn(dummyUser);
         when(templateService.createTemplate(any(Template.class), eq(dummyUser))).thenReturn(saved);
@@ -73,7 +71,7 @@ class TemplateControllerTest {
     void testGetTemplate() throws Exception {
         UUID templateId = UUID.randomUUID();
         Template template = new Template(templateId, "Template 2", "Note 2",
-                dummyUser, "Red", 45);
+                dummyUser);
 
         when(templateService.getTemplate(templateId)).thenReturn(template);
 
@@ -85,8 +83,8 @@ class TemplateControllerTest {
 
     @Test
     void testGetTemplatesByUser() throws Exception {
-        Template t1 = new Template(UUID.randomUUID(), "T1", "Note1", dummyUser, "Blue", 30);
-        Template t2 = new Template(UUID.randomUUID(), "T2", "Note2", dummyUser, "Green", 45);
+        Template t1 = new Template(UUID.randomUUID(), "T1", "Note1", dummyUser);
+        Template t2 = new Template(UUID.randomUUID(), "T2", "Note2", dummyUser);
 
         when(templateService.getTemplatesByUser(userId)).thenReturn(List.of(t1, t2));
 
@@ -102,11 +100,9 @@ class TemplateControllerTest {
         TemplateRequestDTO dto = new TemplateRequestDTO();
         dto.setName("Updated Template");
         dto.setNote("Updated note");
-        dto.setColor("Yellow");
-        dto.setDefaultDuration(60);
 
         Template updated = new Template(templateId, "Updated Template", "Updated note",
-                dummyUser, "Yellow", 60);
+                dummyUser);
 
         when(templateService.updateTemplate(eq(templateId), any(Template.class))).thenReturn(updated);
 

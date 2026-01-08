@@ -3,8 +3,6 @@ package com.planner.api.dto;
 public class TemplateRequestDTO {
     private String name;
     private String note; // updated
-    private String color;
-    private Integer defaultDuration; // in minutes
 
     // Getters and Setters
     public String getName() {
@@ -21,21 +19,5 @@ public class TemplateRequestDTO {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public Integer getDefaultDuration() {
-        return defaultDuration;
-    }
-
-    public void setDefaultDuration(Integer defaultDuration) {
-        this.defaultDuration = defaultDuration;
     }
 }

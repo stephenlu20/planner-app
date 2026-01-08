@@ -33,8 +33,6 @@ class TemplateServiceTest {
         Template template = new Template();
         template.setName("Test Template");
         template.setNote("This is a test note"); // updated
-        template.setColor("Blue");
-        template.setDefaultDuration(30);
 
         when(templateRepository.save(template)).thenReturn(template);
 
@@ -80,15 +78,11 @@ class TemplateServiceTest {
         existing.setId(id);
         existing.setName("Old Template");
         existing.setNote("Old note"); // updated
-        existing.setColor("Red");
-        existing.setDefaultDuration(20);
         existing.setOwner(dummyUser);
 
         Template updated = new Template();
         updated.setName("Updated Template");
         updated.setNote("Updated note"); // updated
-        updated.setColor("Green");
-        updated.setDefaultDuration(45);
 
         when(templateRepository.findById(id)).thenReturn(Optional.of(existing));
         when(templateRepository.save(any(Template.class))).thenReturn(updated);
@@ -96,8 +90,6 @@ class TemplateServiceTest {
         Template result = templateService.updateTemplate(id, updated);
         assertEquals("Updated Template", result.getName());
         assertEquals("Updated note", result.getNote()); // updated
-        assertEquals("Green", result.getColor());
-        assertEquals(45, result.getDefaultDuration());
     }
 
     @Test

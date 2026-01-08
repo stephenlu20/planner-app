@@ -33,8 +33,6 @@ public class TemplateService {
         Template existing = getTemplate(id);
         existing.setName(updatedTemplate.getName());
         existing.setNote(updatedTemplate.getNote());
-        existing.setColor(updatedTemplate.getColor());
-        existing.setDefaultDuration(updatedTemplate.getDefaultDuration());
         return templateRepository.save(existing);
     }
 

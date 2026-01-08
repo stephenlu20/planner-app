@@ -32,8 +32,6 @@ public class TemplateController {
         Template template = new Template();
         template.setName(dto.getName());
         template.setNote(dto.getNote()); // updated
-        template.setColor(dto.getColor());
-        template.setDefaultDuration(dto.getDefaultDuration());
 
         Template saved = templateService.createTemplate(template, owner);
         return mapToDTO(saved);
@@ -57,8 +55,6 @@ public class TemplateController {
         Template template = new Template();
         template.setName(dto.getName());
         template.setNote(dto.getNote()); // updated
-        template.setColor(dto.getColor());
-        template.setDefaultDuration(dto.getDefaultDuration());
 
         Template updated = templateService.updateTemplate(id, template);
         return mapToDTO(updated);
@@ -74,8 +70,6 @@ public class TemplateController {
         dto.setId(template.getId());
         dto.setName(template.getName());
         dto.setNote(template.getNote()); // updated
-        dto.setColor(template.getColor());
-        dto.setDefaultDuration(template.getDefaultDuration());
         dto.setOwnerId(template.getOwner() != null ? template.getOwner().getId() : null);
         return dto;
     }
