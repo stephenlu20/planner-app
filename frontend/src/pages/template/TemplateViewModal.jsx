@@ -38,18 +38,6 @@ export default function TemplateViewModal({ template, onClose }) {
               {template.note || "—"}
             </div>
           </div>
-
-          <div>
-            <span className="font-medium">Default Duration:</span>
-            <div>
-              {template.defaultDuration} minutes
-            </div>
-          </div>
-
-          <div>
-            <span className="font-medium">Color:</span>
-            <div>{template.color}</div>
-          </div>
         </div>
         <div className="mt-4 border-t pt-4">
           <h3 className="font-medium mb-2">Entries</h3>

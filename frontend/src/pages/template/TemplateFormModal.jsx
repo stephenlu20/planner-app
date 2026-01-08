@@ -8,14 +8,11 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
 
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
-  const [defaultDuration, setDefaultDuration] = useState(30);
-  const [color, setColor] = useState("BLUE");
   const [entries, setEntries] = useState([]);
   const [removedEntryIds, setRemovedEntryIds] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const COLORS = ["BLUE", "GREEN", "RED", "YELLOW", "PURPLE"];
   const ENTRY_TYPES = ["TEXT", "NUMBER", "CHECKBOX", "TABLE", "HEADER"];
   const readOnly = false;
 
@@ -24,8 +21,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
     if (template) {
       setName(template.name ?? "");
       setNote(template.note ?? "");
-      setDefaultDuration(template.defaultDuration ?? 30);
-      setColor(template.color ?? "BLUE");
 
       (async () => {
         try {
@@ -109,9 +104,7 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       // Save or update the template first
       const templatePayload = {
         name,
-        note,
-        defaultDuration: Number(defaultDuration),
-        color,
+        note
       };
 
       const savedTemplate = isEdit
@@ -213,28 +206,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
               className="w-full border rounded px-3 py-2"
               rows={3}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Default Duration (minutes)</label>
-            <input
-              type="number"
-              min={0}
-              value={defaultDuration}
-              onChange={(e) => setDefaultDuration(e.target.value)}
-              className="w-full border rounded px-3 py-2"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Color</label>
-            <select
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              className="w-full border rounded px-3 py-2 cursor-pointer"
-            >
-              {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
           </div>
 
           {/* Entries section */}
