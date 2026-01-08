@@ -8,7 +8,7 @@ export default function Calendar() {
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  const dayOfMonth = currentDate.getDate();
+  // const dayOfMonth = currentDate.getDate();
 
   const prev = () => {
     if (view === "month") setCurrentDate(new Date(year, month - 1, 1));
@@ -24,7 +24,7 @@ export default function Calendar() {
 
   const monthLabel = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
   const weekLabel = `Week of ${new Date(currentDate.getTime() - currentDate.getDay() * 24 * 60 * 60 * 1000).toLocaleDateString()}`;
-  const dayLabel = currentDate.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const dayLabel = currentDate.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
 
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
