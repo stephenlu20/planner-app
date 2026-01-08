@@ -16,7 +16,7 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
   const [error, setError] = useState(null);
 
   const COLORS = ["BLUE", "GREEN", "RED", "YELLOW", "PURPLE"];
-  const ENTRY_TYPES = ["TEXT", "NUMBER", "CHECKBOX", "TABLE"];
+  const ENTRY_TYPES = ["TEXT", "NUMBER", "CHECKBOX", "TABLE", "HEADER"];
   const readOnly = false;
 
   // Load template and entries if editing
@@ -139,15 +139,18 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
 
         // Build payload for backend
         const payload = {
-          id: entry.id, // optional but safe
-          type: entry.type || "TEXT",
+          type: entry.type,
           subjectType: entry.subjectType || "TEMPLATE",
-          subjectId: entry.subjectId || savedTemplate.id, // crucial to avoid 400
-          label: entry.label,
-          value: entry.value ?? "",
-          note: entry.note ?? "",
-          orderIndex: i,
+          subjectId: entry.subjectId || savedTemplate.id,
+          label: entry.label || "",
+          value: entry.type === "HEADER" ? null : entry.value || "",
+          note: entry.type === "HEADER" ? (entry.note || "") : entry.note || "",
+          orderIndex: i
         };
+
+        if (entry.type === "HEADER" && !entry.note) {
+          payload.note = null;
+        }
 
         // Update existing entry
         if (entry.id) {
@@ -240,13 +243,15 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
             {entries.map((entry, index) => (
               <div key={index} className="flex flex-col gap-2 mb-2">
                 <div className="flex gap-2 items-center">
-                  <input
-                    value={entry.label}
-                    onChange={(e) => updateEntryLocal(index, "label", e.target.value)}
-                    placeholder="Label"
-                    className="border rounded px-2 py-1 flex-1"
-                    required
-                  />
+                  {entry.type !== "HEADER" && (
+                    <input
+                      value={entry.label}
+                      onChange={(e) => updateEntryLocal(index, "label", e.target.value)}
+                      placeholder="Label"
+                      className="border rounded px-2 py-1 flex-1"
+                      required
+                    />
+                  )}
                   <select
                     value={entry.type}
                     onChange={(e) => updateEntryLocal(index, "type", e.target.value)}

@@ -4,5 +4,6 @@ public enum EntryType {
     TEXT,
     NUMBER,
     TABLE,
-    CHECKBOX
+    CHECKBOX,
+    HEADER
 }
