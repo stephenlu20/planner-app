@@ -141,4 +141,8 @@ public class Event {
     public void setCalendar(Calendar calendar) {
         this.calendar = calendar;
     }
+
+    public UUID getTemplateId() {
+        return templateId;
+    }
 }

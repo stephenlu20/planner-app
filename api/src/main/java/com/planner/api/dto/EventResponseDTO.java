@@ -10,6 +10,7 @@ public class EventResponseDTO {
     private boolean completed;
     private Long userId;
     private UUID calendarId;
+    private UUID templateId;
 
     public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, Long userId, UUID calendarId) {
         this.id = id;
@@ -18,6 +19,17 @@ public class EventResponseDTO {
         this.completed = completed;
         this.userId = userId;
         this.calendarId = calendarId;
+        this.templateId = null;
+    }
+
+    public EventResponseDTO(UUID id, String note, int orderIndex, boolean completed, Long userId, UUID calendarId, UUID templateId) {
+        this.id = id;
+        this.note = note;
+        this.orderIndex = orderIndex;
+        this.completed = completed;
+        this.userId = userId;
+        this.calendarId = calendarId;
+        this.templateId = templateId;
     }
 
     public UUID getId() {
@@ -42,5 +54,9 @@ public class EventResponseDTO {
 
     public UUID getCalendarId() {
         return calendarId;
+    }
+
+    public UUID getTemplateId() {
+        return templateId;
     }
 }

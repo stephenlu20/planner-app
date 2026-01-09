@@ -76,7 +76,8 @@ public class EventController {
                 event.getOrderIndex(),
                 event.isCompleted(),
                 event.getUser().getId(),
-                event.getCalendar().getId()
+                event.getCalendar().getId(),
+                event.getTemplateId()
         );
     }
 }
