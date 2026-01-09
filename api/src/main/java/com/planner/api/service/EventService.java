@@ -39,7 +39,7 @@ public class EventService {
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
         event.setCompleted(!event.isCompleted());
-        return event;
+        return eventRepository.save(event);
     }
 
     public Event createEvent(String note, int orderIndex, Long userId, UUID calendarId) {
