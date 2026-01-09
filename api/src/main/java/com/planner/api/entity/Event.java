@@ -1,5 +1,6 @@
 package com.planner.api.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +26,9 @@ public class Event {
     private boolean completed;
 
     private int orderIndex;
+
+    @Column(name = "template_id", nullable = true)
+    private UUID templateId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
@@ -52,6 +56,26 @@ public class Event {
         this.calendar = calendar;
         this.orderIndex = orderIndex;
         this.completed = false;
+        this.templateId = null;
+    }
+
+    public Event(
+            String title,
+            String note,
+            LocalDateTime dateTime,
+            User user,
+            Calendar calendar,
+            int orderIndex,
+            UUID templateId
+    ) {
+        this.title = title;
+        this.note = note;
+        this.dateTime = dateTime;
+        this.user = user;
+        this.calendar = calendar;
+        this.orderIndex = orderIndex;
+        this.completed = false;
+        this.templateId = templateId;
     }
 
     public Event(User user, Calendar calendar, String note, int orderIndex) {
@@ -59,6 +83,7 @@ public class Event {
         this.calendar = calendar;
         this.note = note;
         this.orderIndex = orderIndex;
+        this.templateId = null;
     }
 
     public UUID getId() {
