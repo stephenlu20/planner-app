@@ -8,7 +8,7 @@ import java.util.UUID;
         name = "entries",
         indexes = {
             @Index(name = "idx_entries_subject_order",
-                columnList = "subjectType, subjectId, orderIndex")
+                columnList = "subject_type, subject_id, order_index")
         }
     )
 public class Entry {

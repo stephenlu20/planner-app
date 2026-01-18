@@ -2,12 +2,16 @@ package com.planner.api.controller;
 
 import com.planner.api.dto.*;
 import com.planner.api.entity.Event;
+import com.planner.api.entity.ScheduleRule;
 import com.planner.api.entity.Template;
 import com.planner.api.entity.User;
+import com.planner.api.service.ScheduleRuleEventGenerator;
+import com.planner.api.service.ScheduleRuleService;
 import com.planner.api.service.TemplateService;
 import com.planner.api.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,10 +23,18 @@ public class TemplateController {
 
     private final TemplateService templateService;
     private final UserService userService;
+    private final ScheduleRuleService scheduleRuleService;
+    private final ScheduleRuleEventGenerator eventGenerator;
 
-    public TemplateController(TemplateService templateService, UserService userService) {
+    public TemplateController(
+            TemplateService templateService, 
+            UserService userService,
+            ScheduleRuleService scheduleRuleService,
+            ScheduleRuleEventGenerator eventGenerator) {
         this.templateService = templateService;
         this.userService = userService;
+        this.scheduleRuleService = scheduleRuleService;
+        this.eventGenerator = eventGenerator;
     }
 
     @PostMapping("/user/{userId}")
@@ -63,6 +75,24 @@ public class TemplateController {
     @DeleteMapping("/{id}")
     public void deleteTemplate(@PathVariable UUID id) {
         templateService.deleteTemplate(id);
+    }
+
+    /**
+     * Preview dates that will be generated from template's schedule rule
+     */
+    @GetMapping("/{id}/preview")
+    public SchedulePreviewResponseDTO previewSchedule(@PathVariable UUID id) {
+        Template template = templateService.getTemplate(id);
+        
+        List<ScheduleRule> rules = scheduleRuleService.getByTemplate(template);
+        if (rules.isEmpty() || !rules.get(0).isActive()) {
+            throw new RuntimeException("No active schedule rule found for template");
+        }
+        
+        ScheduleRule rule = rules.get(0);
+        List<LocalDate> dates = eventGenerator.generateEventDates(rule);
+        
+        return new SchedulePreviewResponseDTO(dates);
     }
 
     /**
