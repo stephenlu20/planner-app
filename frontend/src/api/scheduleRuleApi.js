@@ -1,17 +1,24 @@
 import api from "./axios";
 
-// Preview schedule dates
-export const previewTemplateSchedule = async (templateId) => {
-  const res = await api.get(`/templates/${templateId}/preview`);
+// Create schedule rule
+export const createScheduleRule = async (ruleData) => {
+  const res = await api.post("/schedule-rules", ruleData);
   return res.data;
 };
 
-// Populate calendar from template
-export const populateCalendar = async (templateId, calendarId, deleteStrategy) => {
-  const res = await api.post("/templates/populate", {
-    templateId,
-    calendarId,
-    deleteStrategy
-  });
+// Get schedule rules by template
+export const getScheduleRulesByTemplate = async (templateId) => {
+  const res = await api.get(`/schedule-rules/template/${templateId}`);
   return res.data;
+};
+
+// Update schedule rule
+export const updateScheduleRule = async (ruleId, ruleData) => {
+  const res = await api.put(`/schedule-rules/${ruleId}`, ruleData);
+  return res.data;
+};
+
+// Delete schedule rule
+export const deleteScheduleRule = async (ruleId) => {
+  await api.delete(`/schedule-rules/${ruleId}`);
 };

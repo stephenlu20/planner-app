@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { createTemplate, updateTemplate } from "../../api/templateApi";
 import { createEntry, updateEntry, deleteEntry, getEntriesBySubject } from "../../api/entryApi";
+import { createScheduleRule, getScheduleRulesByTemplate, updateScheduleRule } from "../../api/scheduleRuleApi";
 import EntryRenderer from "../../components/entries/EntryRenderer";
+import ScheduleRuleForm from "./ScheduleRuleForm";
 
 export default function TemplateFormModal({ userId, template, onClose, onSaved }) {
   const isEdit = Boolean(template);
@@ -10,6 +12,8 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
   const [note, setNote] = useState("");
   const [entries, setEntries] = useState([]);
   const [removedEntryIds, setRemovedEntryIds] = useState([]);
+  const [scheduleRule, setScheduleRule] = useState(null);
+  const [existingRuleId, setExistingRuleId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -24,9 +28,13 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
 
       (async () => {
         try {
-          const fetched = await getEntriesBySubject("TEMPLATE", template.id);
+          const [fetchedEntries, fetchedRules] = await Promise.all([
+            getEntriesBySubject("TEMPLATE", template.id),
+            getScheduleRulesByTemplate(template.id)
+          ]);
+          
           setEntries(
-            fetched.map((e) => ({
+            fetchedEntries.map((e) => ({
               id: e.id,
               label: e.label || "",
               type: e.type || "TEXT",
@@ -37,8 +45,14 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
               previousValues: { [e.type]: e.value || "" },
             }))
           );
+
+          if (fetchedRules.length > 0) {
+            const rule = fetchedRules[0];
+            setExistingRuleId(rule.id);
+            setScheduleRule(rule);
+          }
         } catch (err) {
-          console.error("Failed to fetch entries", err);
+          console.error("Failed to fetch template data", err);
           setEntries([]);
         }
       })();
@@ -122,8 +136,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       setRemovedEntryIds([]);
 
       // Process entries (create or update)
-      const processedEntries = [];
-
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
 
@@ -157,10 +169,23 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
         } else {
           // Create new entry
           const savedEntry = await createEntry(userId, payload);
-          entry.id = savedEntry.id; // attach ID for future edits
+          entry.id = savedEntry.id;
         }
+      }
 
-        processedEntries.push({ ...entry, ...payload });
+      // Handle schedule rule
+      if (scheduleRule && scheduleRule.startDate) {
+        const rulePayload = {
+          userId,
+          templateId: savedTemplate.id,
+          ...scheduleRule
+        };
+
+        if (existingRuleId) {
+          await updateScheduleRule(existingRuleId, rulePayload);
+        } else {
+          await createScheduleRule(rulePayload);
+        }
       }
 
       // Refresh entries attached to the template
@@ -172,16 +197,15 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       onClose();
     } catch (err) {
       console.error(err);
-      setError("Failed to save template or entries");
+      setError("Failed to save template");
     } finally {
       setSaving(false);
     }
   };
 
-
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-      <div className="bg-white rounded shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white rounded shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">
           {isEdit ? "Edit Template" : "New Template"}
         </h2>
@@ -254,6 +278,12 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
               + Add Entry
             </button>
           </div>
+
+          {/* Schedule Rule */}
+          <ScheduleRuleForm
+            rule={scheduleRule}
+            onChange={setScheduleRule}
+          />
 
           {error && <div className="text-sm text-red-600">{error}</div>}
 
