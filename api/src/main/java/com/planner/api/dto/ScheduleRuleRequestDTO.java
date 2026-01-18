@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class ScheduleRuleRequestDTO {
 
-    private UUID userId;
+    private Long userId;
     private UUID templateId;
 
     private ScheduleFrequency frequency;
@@ -24,11 +24,11 @@ public class ScheduleRuleRequestDTO {
 
     private boolean active = true;
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

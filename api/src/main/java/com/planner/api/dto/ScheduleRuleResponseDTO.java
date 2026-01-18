@@ -9,7 +9,7 @@ import java.util.UUID;
 public class ScheduleRuleResponseDTO {
 
     private UUID id;
-    private UUID userId;
+    private Long userId;
     private UUID templateId;
 
     private ScheduleFrequency frequency;
@@ -33,11 +33,11 @@ public class ScheduleRuleResponseDTO {
         this.id = id;
     }
 
-    public UUID getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

@@ -56,7 +56,7 @@ public class ScheduleRule {
     @Column(nullable = false)
     private boolean active = true;
 
-    protected ScheduleRule() {}
+    public ScheduleRule() {}
 
     // --- Getters ---
 
