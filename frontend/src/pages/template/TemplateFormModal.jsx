@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { createTemplate, updateTemplate } from "../../api/templateApi";
 import { createEntry, updateEntry, deleteEntry, getEntriesBySubject } from "../../api/entryApi";
-import { createScheduleRule, getScheduleRulesByTemplate, updateScheduleRule } from "../../api/scheduleRuleApi";
+import { 
+  createScheduleRule,
+  getScheduleRulesByTemplate,
+  updateScheduleRule
+} from "../../api/scheduleRuleApi";
 import EntryRenderer from "../../components/entries/EntryRenderer";
 import ScheduleRuleForm from "./ScheduleRuleForm";
 
@@ -62,21 +66,18 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
     setRemovedEntryIds([]);
   }, [template]);
 
-  // Add new entry
   const addEntry = () =>
     setEntries([
       ...entries,
       { label: "", type: "TEXT", value: "", note: "", subjectType: "TEMPLATE", subjectId: template?.id ?? null, previousValues: {} },
     ]);
 
-  // Remove entry
   const removeEntry = (index) => {
     const entryToRemove = entries[index];
     if (entryToRemove.id) setRemovedEntryIds([...removedEntryIds, entryToRemove.id]);
     setEntries(entries.filter((_, i) => i !== index));
   };
 
-  // Update entry locally
   const updateEntryLocal = (index, fieldOrEntry, value) => {
     const newEntries = [...entries];
     if (typeof fieldOrEntry === "string") {
@@ -108,14 +109,12 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
     setEntries(newEntries);
   };
 
-  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
 
     try {
-      // Save or update the template first
       const templatePayload = {
         name,
         note
@@ -135,14 +134,12 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
       }
       setRemovedEntryIds([]);
 
-      // Process entries (create or update)
+      // Process entries
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
 
-        // Skip empty labels
         if (!entry.label?.trim()) continue;
 
-        // Build payload for backend
         const payload = {
           type: entry.type,
           subjectType: entry.subjectType || "TEMPLATE",
@@ -157,23 +154,21 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
           payload.note = null;
         }
 
-        // Update existing entry
         if (entry.id) {
-          const payload = {
+          const updatePayload = {
             label: entry.label,
             value: entry.value ?? "",
             note: entry.note ?? "",
             orderIndex: i,
           };
-          await updateEntry(entry.id, payload);
+          await updateEntry(entry.id, updatePayload);
         } else {
-          // Create new entry
           const savedEntry = await createEntry(userId, payload);
           entry.id = savedEntry.id;
         }
       }
 
-      // Handle schedule rule
+      // Save schedule rule
       if (scheduleRule && scheduleRule.startDate) {
         const rulePayload = {
           userId,
@@ -188,16 +183,14 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
         }
       }
 
-      // Refresh entries attached to the template
       const updatedEntries = await getEntriesBySubject("TEMPLATE", savedTemplate.id);
       savedTemplate.entries = updatedEntries;
 
-      // Notify parent and close modal
       onSaved(savedTemplate);
       onClose();
     } catch (err) {
       console.error(err);
-      setError("Failed to save template");
+      setError(err.response?.data?.message || "Failed to save template");
     } finally {
       setSaving(false);
     }
@@ -211,7 +204,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Template fields */}
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
             <input
@@ -232,7 +224,6 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
             />
           </div>
 
-          {/* Entries section */}
           <div className="mt-4 border-t pt-4">
             <h3 className="font-medium mb-2">Entries</h3>
             {entries.map((entry, index) => (
@@ -279,13 +270,16 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
             </button>
           </div>
 
-          {/* Schedule Rule */}
           <ScheduleRuleForm
+            key={template?.id || 'new'}
             rule={scheduleRule}
             onChange={setScheduleRule}
           />
-
-          {error && <div className="text-sm text-red-600">{error}</div>}
+          {error && (
+            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded p-2">
+              {error}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-2">
             <button

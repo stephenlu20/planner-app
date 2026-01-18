@@ -3,7 +3,7 @@ import { previewTemplateSchedule, populateCalendar } from "../../api/templatePop
 
 export default function TemplatePopulateModal({ template, calendars, onClose, onPopulated }) {
   const [selectedCalendar, setSelectedCalendar] = useState("");
-  const [deleteStrategy, setDeleteStrategy] = useState("KEEP_ALL");
+  const [deleteStrategy, setDeleteStrategy] = useState("DELETE_FUTURE");
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

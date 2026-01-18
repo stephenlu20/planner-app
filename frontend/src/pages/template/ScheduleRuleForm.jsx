@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function ScheduleRuleForm({ rule, onChange }) {
   const [frequency, setFrequency] = useState(rule?.frequency || "DAILY");
@@ -12,6 +12,26 @@ export default function ScheduleRuleForm({ rule, onChange }) {
 
   const DAYS_OF_WEEK = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
   const WEEK_ORDINALS = ["FIRST", "SECOND", "THIRD", "FOURTH", "LAST"];
+
+  // Track if we've initialized from a loaded rule to avoid re-syncing
+  const hasInitialized = useRef(false);
+
+  // Sync state when we first get rule data (but not on subsequent onChange updates)
+  useEffect(() => {
+    // Only sync if we haven't initialized yet AND rule has an ID (meaning it came from database, not from our own onChange)
+    if (!hasInitialized.current && rule?.id) {
+      hasInitialized.current = true;
+      
+      setFrequency(rule.frequency || "DAILY");
+      setStartDate(rule.startDate || "");
+      setEndDate(rule.endDate || "");
+      setDaysOfWeek(rule.daysOfWeek || []);
+      setMonthlyPattern(rule.monthlyPatternType || "DAY_OF_MONTH");
+      setDayOfMonth(rule.dayOfMonth || 1);
+      setWeekOrdinal(rule.weekOrdinal || "FIRST");
+      setWeekday(rule.weekday || "MONDAY");
+    }
+  }, [rule]);
 
   useEffect(() => {
     const ruleData = {
@@ -73,7 +93,6 @@ export default function ScheduleRuleForm({ rule, onChange }) {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             className="w-full border rounded px-3 py-2"
-            required
           />
         </div>
         <div>
