@@ -8,6 +8,22 @@ export default function TemplatePopulateModal({ template, calendars, onClose, on
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Helper functions for formatting
+  const formatFrequency = (freq) => {
+    if (!freq) return "N/A";
+    return freq.charAt(0) + freq.slice(1).toLowerCase();
+  };
+
+  const formatDay = (day) => {
+    if (!day) return "";
+    return day.charAt(0) + day.slice(1).toLowerCase();
+  };
+
+  const formatDaysOfWeek = (days) => {
+    if (!days || days.length === 0) return "";
+    return days.map(formatDay).join(", ");
+  };
+
   useEffect(() => {
     if (calendars.length > 0) {
       setSelectedCalendar(calendars[0].id);
@@ -131,19 +147,26 @@ export default function TemplatePopulateModal({ template, calendars, onClose, on
             <div className="border rounded p-3 bg-gray-50">
               <div className="text-sm font-medium mb-2">Schedule Preview</div>
               <div className="text-sm space-y-1">
+                <div><strong>Frequency:</strong> {formatFrequency(preview.frequency)}</div>
                 <div><strong>Total events:</strong> {preview.count}</div>
-                <div><strong>First date:</strong> {preview.firstDate}</div>
-                <div><strong>Last date:</strong> {preview.lastDate}</div>
-              </div>
-              
-              {preview.count <= 20 && (
-                <div className="mt-2">
-                  <div className="text-xs font-medium mb-1">All dates:</div>
-                  <div className="text-xs text-gray-600 max-h-32 overflow-y-auto">
-                    {preview.dates.join(", ")}
+                <div><strong>Date range:</strong> {preview.firstDate} to {preview.lastDate || "ongoing"}</div>
+                
+                {preview.frequency === "WEEKLY" && preview.daysOfWeek && preview.daysOfWeek.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <strong>Days:</strong> {formatDaysOfWeek(preview.daysOfWeek)}
                   </div>
-                </div>
-              )}
+                )}
+                
+                {preview.frequency === "MONTHLY" && preview.monthlyPattern && (
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <strong>Pattern:</strong>{" "}
+                    {preview.monthlyPattern === "DAY_OF_MONTH" 
+                      ? `Day ${preview.dayOfMonth} of each month`
+                      : `${formatDay(preview.weekOrdinal)} ${formatDay(preview.weekday)} of each month`
+                    }
+                  </div>
+                )}
+              </div>
             </div>
           )}
 

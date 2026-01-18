@@ -92,7 +92,8 @@ public class TemplateController {
         ScheduleRule rule = rules.get(0);
         List<LocalDate> dates = eventGenerator.generateEventDates(rule);
         
-        return new SchedulePreviewResponseDTO(dates);
+        // Changed: Pass both dates AND rule to populate frequency information
+        return new SchedulePreviewResponseDTO(dates, rule);
     }
 
     /**
