@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.planner.api.dto.TemplateRequestDTO;
 import com.planner.api.entity.Template;
 import com.planner.api.entity.User;
+import com.planner.api.service.ScheduleRuleEventGenerator;
+import com.planner.api.service.ScheduleRuleService;
 import com.planner.api.service.TemplateService;
 import com.planner.api.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +29,8 @@ class TemplateControllerTest {
     private MockMvc mockMvc;
     private TemplateService templateService;
     private UserService userService;
+    private ScheduleRuleService scheduleRuleService;
+    private ScheduleRuleEventGenerator eventGenerator;
     private ObjectMapper objectMapper;
 
     private Long userId;
@@ -36,7 +40,16 @@ class TemplateControllerTest {
     void setUp() {
         templateService = mock(TemplateService.class);
         userService = mock(UserService.class);
-        TemplateController controller = new TemplateController(templateService, userService);
+        scheduleRuleService = mock(ScheduleRuleService.class);
+        eventGenerator = mock(ScheduleRuleEventGenerator.class);
+        
+        TemplateController controller = new TemplateController(
+            templateService, 
+            userService, 
+            scheduleRuleService, 
+            eventGenerator
+        );
+        
         mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
         objectMapper = new ObjectMapper();
         userId = 1L;
