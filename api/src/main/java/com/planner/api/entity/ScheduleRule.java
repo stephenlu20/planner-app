@@ -16,16 +16,14 @@ public class ScheduleRule {
     @GeneratedValue
     private UUID id;
 
-    /* --------------------
-     * Ownership
-     * -------------------- */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "template_id", nullable = false)
     private Template template;
 
-    /* --------------------
-     * Core recurrence
-     * -------------------- */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScheduleFrequency frequency;
@@ -33,12 +31,8 @@ public class ScheduleRule {
     @Column(nullable = false)
     private LocalDate startDate;
 
-    @Column(nullable = true)
-    private LocalDate endDate; // null = repeat indefinitely
+    private LocalDate endDate;
 
-    /* --------------------
-     * Weekly configuration
-     * -------------------- */
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "schedule_rule_weekdays",
@@ -48,27 +42,115 @@ public class ScheduleRule {
     @Column(name = "weekday")
     private Set<DayOfWeek> daysOfWeek = new HashSet<>();
 
-    /* --------------------
-     * Monthly configuration
-     * -------------------- */
     @Enumerated(EnumType.STRING)
     private MonthlyPatternType monthlyPatternType;
 
-    // For DAY_OF_MONTH
-    private Integer dayOfMonth; // 1–31
+    private Integer dayOfMonth;
 
-    // For NTH_WEEKDAY_OF_MONTH
     @Enumerated(EnumType.STRING)
     private WeekOrdinal weekOrdinal;
 
     @Enumerated(EnumType.STRING)
     private DayOfWeek weekday;
 
-    /* --------------------
-     * Metadata
-     * -------------------- */
     @Column(nullable = false)
     private boolean active = true;
 
     protected ScheduleRule() {}
+
+    // --- Getters ---
+
+    public UUID getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Template getTemplate() {
+        return template;
+    }
+
+    public ScheduleFrequency getFrequency() {
+        return frequency;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public Set<DayOfWeek> getDaysOfWeek() {
+        return daysOfWeek;
+    }
+
+    public MonthlyPatternType getMonthlyPatternType() {
+        return monthlyPatternType;
+    }
+
+    public Integer getDayOfMonth() {
+        return dayOfMonth;
+    }
+
+    public WeekOrdinal getWeekOrdinal() {
+        return weekOrdinal;
+    }
+
+    public DayOfWeek getWeekday() {
+        return weekday;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    // --- Setters ---
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setTemplate(Template template) {
+        this.template = template;
+    }
+
+    public void setFrequency(ScheduleFrequency frequency) {
+        this.frequency = frequency;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public void setDaysOfWeek(Set<DayOfWeek> daysOfWeek) {
+        this.daysOfWeek = daysOfWeek;
+    }
+
+    public void setMonthlyPatternType(MonthlyPatternType monthlyPatternType) {
+        this.monthlyPatternType = monthlyPatternType;
+    }
+
+    public void setDayOfMonth(Integer dayOfMonth) {
+        this.dayOfMonth = dayOfMonth;
+    }
+
+    public void setWeekOrdinal(WeekOrdinal weekOrdinal) {
+        this.weekOrdinal = weekOrdinal;
+    }
+
+    public void setWeekday(DayOfWeek weekday) {
+        this.weekday = weekday;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 }
