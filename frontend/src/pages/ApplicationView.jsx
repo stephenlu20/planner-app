@@ -43,7 +43,11 @@ export default function ApplicationView({ userId, setUserId }) {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveView("calendars")}
+<<<<<<< Updated upstream
             className={`px-3 py-1 rounded transition cursor-pointer ${
+=======
+            className={`px-3 py-1 rounded transition ${
+>>>>>>> Stashed changes
               activeView === "calendars"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
