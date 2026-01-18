@@ -3,6 +3,7 @@ package com.planner.api.service;
 import com.planner.api.entity.Template;
 import com.planner.api.entity.User;
 import com.planner.api.repository.TemplateRepository;
+import com.planner.api.repository.EventRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,13 +18,31 @@ import static org.mockito.Mockito.*;
 class TemplateServiceTest {
 
     private TemplateRepository templateRepository;
+    private ScheduleRuleService scheduleRuleService;
+    private ScheduleRuleEventGenerator eventGenerator;
+    private EventRepository eventRepository;
+    private EntryService entryService;
+    private CalendarService calendarService;
     private TemplateService templateService;
     private User dummyUser;
 
     @BeforeEach
     void setUp() {
         templateRepository = mock(TemplateRepository.class);
-        templateService = new TemplateService(templateRepository);
+        scheduleRuleService = mock(ScheduleRuleService.class);
+        eventGenerator = mock(ScheduleRuleEventGenerator.class);
+        eventRepository = mock(EventRepository.class);
+        entryService = mock(EntryService.class);
+        calendarService = mock(CalendarService.class);
+        
+        templateService = new TemplateService(
+            templateRepository,
+            scheduleRuleService,
+            eventGenerator,
+            eventRepository,
+            entryService,
+            calendarService
+        );
 
         dummyUser = new User("Test User");
     }
@@ -32,16 +51,17 @@ class TemplateServiceTest {
     void testCreateTemplate() {
         Template template = new Template();
         template.setName("Test Template");
-        template.setNote("This is a test note"); // updated
+        template.setNote("This is a test note");
 
         when(templateRepository.save(template)).thenReturn(template);
 
-        Template saved = templateService.createTemplate(template, dummyUser);
+        Template saved = templateService.createTemplate(template, dummyUser, null);
         assertNotNull(saved);
         assertEquals("Test Template", saved.getName());
-        assertEquals("This is a test note", saved.getNote()); // updated
+        assertEquals("This is a test note", saved.getNote());
         assertEquals(dummyUser, saved.getOwner());
         verify(templateRepository, times(1)).save(template);
+        verify(scheduleRuleService, never()).create(any());
     }
 
     @Test
@@ -77,19 +97,21 @@ class TemplateServiceTest {
         Template existing = new Template();
         existing.setId(id);
         existing.setName("Old Template");
-        existing.setNote("Old note"); // updated
+        existing.setNote("Old note");
         existing.setOwner(dummyUser);
 
         Template updated = new Template();
         updated.setName("Updated Template");
-        updated.setNote("Updated note"); // updated
+        updated.setNote("Updated note");
 
         when(templateRepository.findById(id)).thenReturn(Optional.of(existing));
-        when(templateRepository.save(any(Template.class))).thenReturn(updated);
+        when(templateRepository.save(any(Template.class))).thenReturn(existing);
+        when(scheduleRuleService.getByTemplate(any())).thenReturn(List.of());
 
-        Template result = templateService.updateTemplate(id, updated);
+        Template result = templateService.updateTemplate(id, updated, null);
         assertEquals("Updated Template", result.getName());
-        assertEquals("Updated note", result.getNote()); // updated
+        assertEquals("Updated note", result.getNote());
+        verify(scheduleRuleService, never()).create(any());
     }
 
     @Test

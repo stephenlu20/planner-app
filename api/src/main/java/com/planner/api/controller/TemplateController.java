@@ -1,7 +1,7 @@
 package com.planner.api.controller;
 
-import com.planner.api.dto.TemplateRequestDTO;
-import com.planner.api.dto.TemplateResponseDTO;
+import com.planner.api.dto.*;
+import com.planner.api.entity.Event;
 import com.planner.api.entity.Template;
 import com.planner.api.entity.User;
 import com.planner.api.service.TemplateService;
@@ -31,9 +31,9 @@ public class TemplateController {
         User owner = userService.getUser(userId);
         Template template = new Template();
         template.setName(dto.getName());
-        template.setNote(dto.getNote()); // updated
+        template.setNote(dto.getNote());
 
-        Template saved = templateService.createTemplate(template, owner);
+        Template saved = templateService.createTemplate(template, owner, null);
         return mapToDTO(saved);
     }
 
@@ -54,9 +54,9 @@ public class TemplateController {
                                               @RequestBody TemplateRequestDTO dto) {
         Template template = new Template();
         template.setName(dto.getName());
-        template.setNote(dto.getNote()); // updated
+        template.setNote(dto.getNote());
 
-        Template updated = templateService.updateTemplate(id, template);
+        Template updated = templateService.updateTemplate(id, template, null);
         return mapToDTO(updated);
     }
 
@@ -65,12 +65,40 @@ public class TemplateController {
         templateService.deleteTemplate(id);
     }
 
+    /**
+     * Populate calendar with events from template's schedule rule
+     */
+    @PostMapping("/populate")
+    public List<EventResponseDTO> populateCalendar(@RequestBody TemplatePopulateRequestDTO request) {
+        List<Event> events = templateService.populateCalendarFromTemplate(
+            request.getTemplateId(),
+            request.getCalendarId(),
+            request.getDeleteStrategy()
+        );
+        
+        return events.stream()
+            .map(this::mapEventToDTO)
+            .collect(Collectors.toList());
+    }
+
     private TemplateResponseDTO mapToDTO(Template template) {
         TemplateResponseDTO dto = new TemplateResponseDTO();
         dto.setId(template.getId());
         dto.setName(template.getName());
-        dto.setNote(template.getNote()); // updated
+        dto.setNote(template.getNote());
         dto.setOwnerId(template.getOwner() != null ? template.getOwner().getId() : null);
         return dto;
+    }
+
+    private EventResponseDTO mapEventToDTO(Event event) {
+        return new EventResponseDTO(
+            event.getId(),
+            event.getNote(),
+            event.getOrderIndex(),
+            event.isCompleted(),
+            event.getUser().getId(),
+            event.getCalendar().getId(),
+            event.getTemplateId()
+        );
     }
 }

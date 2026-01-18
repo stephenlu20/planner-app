@@ -17,6 +17,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,9 +54,9 @@ class TemplateControllerTest {
                 dummyUser);
 
         when(userService.getUser(userId)).thenReturn(dummyUser);
-        when(templateService.createTemplate(any(Template.class), eq(dummyUser))).thenReturn(saved);
+        when(templateService.createTemplate(any(Template.class), eq(dummyUser), isNull()))
+                .thenReturn(saved);
 
-        System.out.println("/templates/user/" + userId.toString());
         mockMvc.perform(post("/templates/user/" + userId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
@@ -64,7 +65,7 @@ class TemplateControllerTest {
                 .andExpect(jsonPath("$.note").value("This is a note"))
                 .andExpect(jsonPath("$.ownerId").value(userId.toString()));
 
-        verify(templateService, times(1)).createTemplate(any(Template.class), eq(dummyUser));
+        verify(templateService, times(1)).createTemplate(any(Template.class), eq(dummyUser), isNull());
     }
 
     @Test
@@ -104,7 +105,8 @@ class TemplateControllerTest {
         Template updated = new Template(templateId, "Updated Template", "Updated note",
                 dummyUser);
 
-        when(templateService.updateTemplate(eq(templateId), any(Template.class))).thenReturn(updated);
+        when(templateService.updateTemplate(eq(templateId), any(Template.class), isNull()))
+                .thenReturn(updated);
 
         mockMvc.perform(put("/templates/" + templateId)
                         .contentType(MediaType.APPLICATION_JSON)
