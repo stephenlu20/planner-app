@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import LoginPage from "./LoginPage";
 import Dashboard from "./Dashboard";
-import CalendarSidebar from "../components/CalendarSidebar";
-import Templates from "./Templates";
+import CalendarSidebar from "../components/calendar/CalendarSidebar";
+import Templates from "./template/Templates";
 import { getCalendarsForUser } from "../api/calendarApi";
 
 export default function ApplicationView({ userId, setUserId }) {
