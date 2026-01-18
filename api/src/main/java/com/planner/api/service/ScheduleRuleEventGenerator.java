@@ -22,30 +22,34 @@ public class ScheduleRuleEventGenerator {
         LocalDate start = rule.getStartDate();
         LocalDate end = rule.getEndDate() != null 
             ? rule.getEndDate() 
-            : start.plusYears(1); // Default 1 year cap
+            : start.plusYears(1).minusDays(1); // Default 1 year cap (inclusive)
         
         LocalDate current = start;
         
-        while (!current.isAfter(end)) {
-            switch (rule.getFrequency()) {
-                case DAILY:
+        switch (rule.getFrequency()) {
+            case DAILY:
+                while (!current.isAfter(end)) {
                     dates.add(current);
                     current = current.plusDays(1);
-                    break;
-                    
-                case WEEKLY:
+                }
+                break;
+                
+            case WEEKLY:
+                while (!current.isAfter(end)) {
                     dates.addAll(generateWeeklyDates(current, end, rule.getDaysOfWeek()));
                     current = current.plusWeeks(1);
-                    break;
-                    
-                case MONTHLY:
+                }
+                break;
+                
+            case MONTHLY:
+                while (!current.isAfter(end)) {
                     LocalDate monthlyDate = generateMonthlyDate(current, rule);
                     if (monthlyDate != null && !monthlyDate.isAfter(end)) {
                         dates.add(monthlyDate);
                     }
                     current = current.plusMonths(1);
-                    break;
-            }
+                }
+                break;
         }
         
         return dates;
