@@ -13,16 +13,20 @@ import java.util.UUID;
 public class ScheduleRuleService {
 
     private final ScheduleRuleRepository scheduleRuleRepository;
+    private final ScheduleRuleValidator validator;
 
-    public ScheduleRuleService(ScheduleRuleRepository scheduleRuleRepository) {
+    public ScheduleRuleService(ScheduleRuleRepository scheduleRuleRepository, ScheduleRuleValidator validator) {
         this.scheduleRuleRepository = scheduleRuleRepository;
+        this.validator = validator;
     }
 
     public ScheduleRule create(ScheduleRule rule) {
+        validator.validateAndThrow(rule);
         return scheduleRuleRepository.save(rule);
     }
 
     public ScheduleRule update(ScheduleRule rule) {
+        validator.validateAndThrow(rule);
         return scheduleRuleRepository.save(rule);
     }
 
