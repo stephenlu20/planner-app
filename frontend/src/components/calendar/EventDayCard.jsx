@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { getEntriesBySubject, updateEntry } from "../../api/entryApi";
+import { toggleEventCompleted, updateEvent } from "../../api/eventApi";
 import EntryRenderer from "../entries/EntryRenderer";
 
 export default function EventDayCard({ event, onEventUpdate }) {
   const [entries, setEntries] = useState([]);
   const [localNote, setLocalNote] = useState(event.note || "");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [toggling, setToggling] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   // Fetch entries for this event
   useEffect(() => {
@@ -27,20 +31,45 @@ export default function EventDayCard({ event, onEventUpdate }) {
   // Update local note state when event changes
   useEffect(() => {
     setLocalNote(event.note || "");
+    setHasUnsavedChanges(false);
   }, [event.note]);
 
-  // Handle note blur (save on losing focus)
-  const handleNoteBlur = async () => {
-    if (localNote === event.note) return; // No change
-    
+  // Handle note changes
+  const handleNoteChange = (e) => {
+    setLocalNote(e.target.value);
+    setHasUnsavedChanges(e.target.value !== (event.note || ""));
+  };
+
+  // Save event note
+  const handleSave = async () => {
+    setSaving(true);
     try {
-      // TODO: Add API call to update event note
-      // For now, just notify parent
+      const updated = await updateEvent(event.id, localNote);
       if (onEventUpdate) {
-        onEventUpdate({ ...event, note: localNote });
+        onEventUpdate(updated);
+      }
+      setHasUnsavedChanges(false);
+    } catch (err) {
+      console.error("Failed to update event:", err);
+      alert("Failed to save changes");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Toggle completion status
+  const handleToggleComplete = async () => {
+    setToggling(true);
+    try {
+      const updated = await toggleEventCompleted(event.id);
+      if (onEventUpdate) {
+        onEventUpdate(updated);
       }
     } catch (err) {
-      console.error("Failed to update note:", err);
+      console.error("Failed to toggle completion:", err);
+      alert("Failed to update status");
+    } finally {
+      setToggling(false);
     }
   };
 
@@ -68,12 +97,18 @@ export default function EventDayCard({ event, onEventUpdate }) {
       <div className="bg-gray-50 border-b px-4 py-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-lg">{event.title || "Event"}</h3>
-          <div className="text-xs text-gray-500">
-            {event.completed ? (
-              <span className="px-2 py-1 bg-green-100 text-green-700 rounded">✓ Completed</span>
-            ) : (
-              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded">Pending</span>
-            )}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleToggleComplete}
+              disabled={toggling}
+              className={`px-3 py-1 text-xs rounded font-medium transition cursor-pointer ${
+                event.completed
+                  ? "bg-green-100 text-green-700 hover:bg-green-200"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              } disabled:opacity-50`}
+            >
+              {toggling ? "..." : event.completed ? "✓ Completed" : "Mark Complete"}
+            </button>
           </div>
         </div>
       </div>
@@ -82,17 +117,30 @@ export default function EventDayCard({ event, onEventUpdate }) {
       <div className="p-4 space-y-4">
         {/* Event Note */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Notes
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-sm font-medium text-gray-700">
+              Notes
+            </label>
+            {hasUnsavedChanges && (
+              <span className="text-xs text-orange-600">Unsaved changes</span>
+            )}
+          </div>
           <textarea
             value={localNote}
-            onChange={(e) => setLocalNote(e.target.value)}
-            onBlur={handleNoteBlur}
+            onChange={handleNoteChange}
             placeholder="Add notes about this event..."
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />
+          {hasUnsavedChanges && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="mt-2 px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 transition cursor-pointer"
+            >
+              {saving ? "Saving..." : "Save Note"}
+            </button>
+          )}
         </div>
 
         {/* Entries */}

@@ -99,4 +99,12 @@ public class EventService {
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         eventRepository.delete(event);
     }
+
+    public Event updateEvent(UUID eventId, String note) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        
+        event.setNote(note);
+        return eventRepository.save(event);
+    }
 }

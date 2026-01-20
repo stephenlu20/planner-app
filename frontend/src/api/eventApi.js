@@ -25,9 +25,13 @@ export const getEventsByCalendar = async (calendarId) => {
   return res.data;
 };
 
-
 export const toggleEventCompleted = async (eventId) => {
   const res = await api.put(`/events/${eventId}/toggle`);
+  return res.data;
+};
+
+export const updateEvent = async (eventId, note) => {
+  const res = await api.put(`/events/${eventId}`, { note });
   return res.data;
 };
 

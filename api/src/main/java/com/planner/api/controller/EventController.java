@@ -5,6 +5,7 @@ import com.planner.api.entity.User;
 import com.planner.api.dto.EventCreateRequestDTO;
 import com.planner.api.dto.EventReorderRequestDTO;
 import com.planner.api.dto.EventResponseDTO;
+import com.planner.api.dto.EventUpdateRequestDTO;
 import com.planner.api.service.EventService;
 import com.planner.api.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/events")
-@CrossOrigin(origins = {"http://localhost:5173", "http://127.0.0.1:5173", "http://[::1]:5173"})
+@CrossOrigin(
+    origins = {"http://localhost:5173", "http://127.0.0.1:5173", "http://[::1]:5173"},
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    allowedHeaders = "*"
+)
 public class EventController {
 
     private final EventService eventService;
@@ -81,5 +86,12 @@ public class EventController {
                 event.getCalendar().getId(),
                 event.getTemplateId()
         );
+    }
+
+    @PutMapping("/{eventId}")
+    public EventResponseDTO updateEvent(@PathVariable UUID eventId, 
+                                    @RequestBody EventUpdateRequestDTO request) {
+        Event updated = eventService.updateEvent(eventId, request.getNote());
+        return toDto(updated);
     }
 }
