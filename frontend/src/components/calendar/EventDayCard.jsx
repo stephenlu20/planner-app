@@ -159,13 +159,9 @@ export default function EventDayCard({ event, onEventUpdate }) {
       <div className="overflow-y-auto flex-1 p-4 space-y-4">
         {/* Event Note */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Notes
-          </label>
           <textarea
             value={localNote}
             onChange={handleNoteChange}
-            placeholder="Add notes about this event..."
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />

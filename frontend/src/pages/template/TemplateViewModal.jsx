@@ -32,8 +32,7 @@ export default function TemplateViewModal({ template, onClose }) {
             <div>{template.name}</div>
           </div>
 
-          <div>
-            <span className="font-medium">Note:</span>
+          <div> 
             <div className="text-gray-700">
               {template.note || "—"}
             </div>

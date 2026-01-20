@@ -66,7 +66,7 @@ export default function ApplicationView({ userId, setUserId }) {
 
         <button
           onClick={handleLogout}
-          className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition"
+          className="px-4 py-2 rounded transition cursor-pointer bg-red-500 text-white hover:bg-red-400"
         >
           Logout
         </button>

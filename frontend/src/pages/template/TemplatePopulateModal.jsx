@@ -128,7 +128,7 @@ export default function TemplatePopulateModal({ template, calendars, onClose, on
                   onChange={(e) => setDeleteStrategy(e.target.value)}
                   className="mr-2"
                 />
-                <span className="text-sm text-red-600">Delete all events (dangerous)</span>
+                <span className="text-sm text-red-600">Delete all events<br></br>(This will delete all events from this template)</span>
               </label>
             </div>
           </div>

@@ -215,11 +215,11 @@ export default function TemplateFormModal({ userId, template, onClose, onSaved }
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Note</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="w-full border rounded px-3 py-2"
+              placeholder="Add context, instructions, or notes about this template..."
               rows={3}
             />
           </div>
