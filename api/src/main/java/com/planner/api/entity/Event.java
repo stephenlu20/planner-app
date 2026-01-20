@@ -21,7 +21,7 @@ public class Event {
 
     private String note;
 
-    private LocalDateTime dateTime;
+    private LocalDateTime dateTime;  // ← THIS MUST BE HERE!
 
     private boolean completed;
 
@@ -51,7 +51,7 @@ public class Event {
     ) {
         this.title = title;
         this.note = note;
-        this.dateTime = dateTime;
+        this.dateTime = dateTime;  // ← SET IT IN CONSTRUCTOR
         this.user = user;
         this.calendar = calendar;
         this.orderIndex = orderIndex;
@@ -70,7 +70,7 @@ public class Event {
     ) {
         this.title = title;
         this.note = note;
-        this.dateTime = dateTime;
+        this.dateTime = dateTime;  // ← SET IT IN CONSTRUCTOR
         this.user = user;
         this.calendar = calendar;
         this.orderIndex = orderIndex;
@@ -84,6 +84,7 @@ public class Event {
         this.note = note;
         this.orderIndex = orderIndex;
         this.templateId = null;
+        this.dateTime = null;  // ← Initialize to null for events without dates
     }
 
     public UUID getId() {
@@ -106,11 +107,11 @@ public class Event {
         this.note = note;
     }
 
-    public LocalDateTime getDateTime() {
+    public LocalDateTime getDateTime() {  // ← GETTER MUST EXIST
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(LocalDateTime dateTime) {  // ← SETTER MUST EXIST
         this.dateTime = dateTime;
     }
 

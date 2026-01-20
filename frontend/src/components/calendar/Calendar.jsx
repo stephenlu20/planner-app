@@ -1,14 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getEventsByCalendar } from "../../api/eventApi";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export default function Calendar() {
+export default function Calendar({ calendarId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("week");
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  // Fetch events when calendar changes
+  useEffect(() => {
+    if (!calendarId) {
+      setEvents([]);
+      return;
+    }
+
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const data = await getEventsByCalendar(calendarId);
+        setEvents(data);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, [calendarId]);
+
+  // Helper function to get events for a specific date
+  const getEventsForDate = (date) => {
+    const targetYear = date.getFullYear();
+    const targetMonth = date.getMonth();
+    const targetDay = date.getDate();
+    
+    return events.filter(event => {
+      if (!event.dateTime) return false;
+      
+      const eventDate = new Date(event.dateTime);
+      
+      return eventDate.getFullYear() === targetYear &&
+             eventDate.getMonth() === targetMonth &&
+             eventDate.getDate() === targetDay;
+    });
+  };
+
+  // Helper to switch to day view for a specific date
+  const switchToDayView = (date) => {
+    setCurrentDate(date);
+    setView("day");
+  };
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-  // const dayOfMonth = currentDate.getDate();
 
   const prev = () => {
     if (view === "month") setCurrentDate(new Date(year, month - 1, 1));
@@ -39,6 +87,14 @@ export default function Calendar() {
     d.setDate(startOfWeek.getDate() + i);
     return d;
   });
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded shadow p-4">
+        <div className="text-gray-500">Loading events...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded shadow p-4">
@@ -90,37 +146,115 @@ export default function Calendar() {
           {DAYS.map((day) => (
             <div key={day} className="font-semibold text-gray-600">{day}</div>
           ))}
-          {monthCells.map((day, idx) => (
-            <div
-              key={idx}
-              className={`h-20 border rounded flex items-start justify-end p-1 ${day ? "bg-gray-50" : "bg-transparent"}`}
-            >
-              {day && <span className="text-sm">{day}</span>}
-            </div>
-          ))}
+          {monthCells.map((day, idx) => {
+            if (!day) {
+              return <div key={idx} className="h-24 bg-transparent" />;
+            }
+
+            const cellDate = new Date(year, month, day);
+            const cellEvents = getEventsForDate(cellDate);
+            const isToday = cellDate.toDateString() === new Date().toDateString();
+
+            return (
+              <div
+                key={idx}
+                onClick={() => switchToDayView(cellDate)}
+                className={`h-24 border rounded flex flex-col items-start p-1 cursor-pointer transition hover:bg-gray-100 ${
+                  isToday ? "bg-blue-50 border-blue-300" : "bg-gray-50"
+                }`}
+              >
+                <span className={`text-sm font-medium ${isToday ? "text-blue-600" : ""}`}>
+                  {day}
+                </span>
+                <div className="w-full mt-1 space-y-1 overflow-hidden">
+                  {cellEvents.slice(0, 3).map((event) => (
+                    <div
+                      key={event.id}
+                      className="text-xs px-1 py-0.5 bg-blue-200 text-blue-800 rounded truncate"
+                      title={event.title || "Event"}
+                    >
+                      {event.title || "Event"}
+                    </div>
+                  ))}
+                  {cellEvents.length > 3 && (
+                    <div className="text-xs text-gray-500">
+                      +{cellEvents.length - 3} more
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       {view === "week" && (
         <div className="grid grid-cols-7 gap-2 text-center">
-          {weekCells.map((d) => (
-            <div
-              key={d.toDateString()}
-              className="h-32 border rounded flex flex-col items-start p-1"
-            >
-              <span className="font-semibold text-sm">{DAYS[d.getDay()]}</span>
-              <span className="text-xs text-gray-500">{d.getMonth() + 1}/{d.getDate()}</span>
-            </div>
-          ))}
+          {weekCells.map((d) => {
+            const cellEvents = getEventsForDate(d);
+            const isToday = d.toDateString() === new Date().toDateString();
+
+            return (
+              <div
+                key={d.toDateString()}
+                onClick={() => switchToDayView(d)}
+                className={`h-40 border rounded flex flex-col items-start p-2 cursor-pointer transition hover:bg-gray-100 ${
+                  isToday ? "bg-blue-50 border-blue-300" : ""
+                }`}
+              >
+                <span className={`font-semibold text-sm ${isToday ? "text-blue-600" : ""}`}>
+                  {DAYS[d.getDay()]}
+                </span>
+                <span className={`text-xs text-gray-500 ${isToday ? "text-blue-500" : ""}`}>
+                  {d.getMonth() + 1}/{d.getDate()}
+                </span>
+                <div className="w-full mt-2 space-y-1 overflow-hidden">
+                  {cellEvents.slice(0, 4).map((event) => (
+                    <div
+                      key={event.id}
+                      className="text-xs px-1 py-0.5 bg-blue-200 text-blue-800 rounded truncate"
+                      title={event.title || "Event"}
+                    >
+                      {event.title || "Event"}
+                    </div>
+                  ))}
+                  {cellEvents.length > 4 && (
+                    <div className="text-xs text-gray-500">
+                      +{cellEvents.length - 4} more
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
       {view === "day" && (
-        <div className="border rounded p-4 h-64 flex flex-col">
+        <div className="border rounded p-4 min-h-64 flex flex-col">
           <h3 className="font-semibold mb-2">{DAYS[currentDate.getDay()]}</h3>
-          <span className="text-gray-500">{dayLabel}</span>
-          <div className="flex-1 mt-2 border-t pt-2 text-sm text-gray-700">
-            No events scheduled
+          <span className="text-gray-500 mb-4">{dayLabel}</span>
+          
+          <div className="flex-1">
+            {getEventsForDate(currentDate).length === 0 ? (
+              <div className="text-sm text-gray-500">No events scheduled</div>
+            ) : (
+              <div className="space-y-2">
+                {getEventsForDate(currentDate).map((event) => (
+                  <div
+                    key={event.id}
+                    className="p-3 border rounded bg-gray-50 hover:bg-gray-100 transition"
+                  >
+                    <div className="font-medium text-sm">
+                      {event.title || "Event"}
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {event.completed ? "✓ Completed" : "Pending"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}

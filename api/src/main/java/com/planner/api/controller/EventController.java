@@ -72,7 +72,9 @@ public class EventController {
     private EventResponseDTO toDto(Event event) {
         return new EventResponseDTO(
                 event.getId(),
+                event.getTitle(),  // ADDED - now includes title
                 event.getNote(),
+                event.getDateTime(),
                 event.getOrderIndex(),
                 event.isCompleted(),
                 event.getUser().getId(),

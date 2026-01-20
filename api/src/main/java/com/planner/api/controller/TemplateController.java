@@ -124,7 +124,9 @@ public class TemplateController {
     private EventResponseDTO mapEventToDTO(Event event) {
         return new EventResponseDTO(
             event.getId(),
+            event.getTitle(),      // ← ADD THIS (2nd parameter)
             event.getNote(),
+            event.getDateTime(),
             event.getOrderIndex(),
             event.isCompleted(),
             event.getUser().getId(),

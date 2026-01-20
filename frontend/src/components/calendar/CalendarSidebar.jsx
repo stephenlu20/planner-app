@@ -33,6 +33,21 @@ export default function CalendarSidebar({
     }
   };
 
+  const handleDelete = async (calendarId) => {
+    try {
+      await deleteCalendar(calendarId);
+      setCalendars(calendars.filter((c) => c.id !== calendarId));
+      
+      // If we deleted the active calendar, select another one or null
+      if (activeCalendarId === calendarId) {
+        const remaining = calendars.filter((c) => c.id !== calendarId);
+        onSelect(remaining.length > 0 ? remaining[0].id : null);
+      }
+    } catch (err) {
+      console.error("Failed to delete calendar:", err);
+    }
+  };
+
   return (
     <div className="w-64 bg-white border-r p-4 flex flex-col">
       <h2 className="font-semibold mb-4 cursor-default">Calendars</h2>
@@ -58,15 +73,9 @@ export default function CalendarSidebar({
             </button>
 
             <button
-              onClick={async (e) => {
-                e.stopPropagation(); // prevent triggering onSelect
-                try {
-                  await deleteCalendar(cal.id); // import from your api
-                  setCalendars(calendars.filter((c) => c.id !== cal.id));
-                  if (activeCalendarId === cal.id) setActiveCalendarId(null);
-                } catch (err) {
-                  console.error("Failed to delete calendar:", err);
-                }
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(cal.id);
               }}
               className="ml-2 px-2 py-1 rounded bg-red-500 text-white hover:bg-red-400 active:scale-95 transition cursor-pointer"
             >

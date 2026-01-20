@@ -84,10 +84,7 @@ export default function ApplicationView({ userId, setUserId }) {
           />
 
           <div className="flex-1 p-6">
-            <Dashboard
-              userId={userId}
-              calendarId={activeCalendarId}
-            />
+            <Dashboard calendarId={activeCalendarId} />
           </div>
         </div>
       )}
