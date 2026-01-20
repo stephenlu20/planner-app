@@ -110,19 +110,19 @@ export default function Calendar({ calendarId }) {
         <div className="flex gap-2">
           <button
             onClick={() => setView("month")}
-            className={`px-3 py-1 rounded ${view === "month" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded cursor-pointer ${view === "month" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Month
           </button>
           <button
             onClick={() => setView("week")}
-            className={`px-3 py-1 rounded ${view === "week" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded cursor-pointer ${view === "week" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Week
           </button>
           <button
             onClick={() => setView("day")}
-            className={`px-3 py-1 rounded ${view === "day" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded cursor-pointer ${view === "day" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Day
           </button>
@@ -131,7 +131,7 @@ export default function Calendar({ calendarId }) {
         <div className="flex items-center gap-2">
           <button
             onClick={prev}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
+            className="px-3 py-1 rounded cursor-pointer bg-gray-200 hover:bg-gray-300 transition"
           >
             Previous
           </button>
@@ -142,7 +142,7 @@ export default function Calendar({ calendarId }) {
 
           <button
             onClick={next}
-            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
+            className="px-3 py-1 rounded cursor-pointer bg-gray-200 hover:bg-gray-300 transition"
           >
             Next
           </button>
