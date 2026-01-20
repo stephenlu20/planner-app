@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { getEventsByCalendar } from "../../api/eventApi";
+import EventDayCard from "./EventDayCard";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function Calendar({ calendarId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [view, setView] = useState("week");
+  const [view, setView] = useState("day");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -53,6 +54,13 @@ export default function Calendar({ calendarId }) {
   const switchToDayView = (date) => {
     setCurrentDate(date);
     setView("day");
+  };
+
+  // Handle event updates
+  const handleEventUpdate = (updatedEvent) => {
+    setEvents(prev => prev.map(e => 
+      e.id === updatedEvent.id ? updatedEvent : e
+    ));
   };
 
   const year = currentDate.getFullYear();
@@ -231,29 +239,25 @@ export default function Calendar({ calendarId }) {
       )}
 
       {view === "day" && (
-        <div className="border rounded p-4 min-h-64 flex flex-col">
-          <h3 className="font-semibold mb-2">{DAYS[currentDate.getDay()]}</h3>
-          <span className="text-gray-500 mb-4">{dayLabel}</span>
+        <div className="min-h-96">
+          <div className="mb-4">
+            <h3 className="font-semibold text-lg">{DAYS[currentDate.getDay()]}</h3>
+            <p className="text-sm text-gray-500">{dayLabel}</p>
+          </div>
           
-          <div className="flex-1">
+          <div className="space-y-4">
             {getEventsForDate(currentDate).length === 0 ? (
-              <div className="text-sm text-gray-500">No events scheduled</div>
-            ) : (
-              <div className="space-y-2">
-                {getEventsForDate(currentDate).map((event) => (
-                  <div
-                    key={event.id}
-                    className="p-3 border rounded bg-gray-50 hover:bg-gray-100 transition"
-                  >
-                    <div className="font-medium text-sm">
-                      {event.title || "Event"}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {event.completed ? "✓ Completed" : "Pending"}
-                    </div>
-                  </div>
-                ))}
+              <div className="text-center py-12 text-gray-500">
+                No events scheduled for this day
               </div>
+            ) : (
+              getEventsForDate(currentDate).map((event) => (
+                <EventDayCard
+                  key={event.id}
+                  event={event}
+                  onEventUpdate={handleEventUpdate}
+                />
+              ))
             )}
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-export default function TableEntry({ entry, onChange, readOnly }) {
+export default function TableEntry({ entry, onChange, readOnly, allowResize = true }) {
   const [table, setTable] = useState({ rows: 1, cols: 1, cells: [[""]] });
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredCol, setHoveredCol] = useState(null);
@@ -18,7 +18,7 @@ export default function TableEntry({ entry, onChange, readOnly }) {
 
   // Calculate actual cell positions after render
   useEffect(() => {
-    if (!tableRef.current || readOnly) return;
+    if (!tableRef.current || readOnly || !allowResize) return;
 
     const updatePositions = () => {
       const rows = tableRef.current.querySelectorAll('tbody tr');
@@ -40,7 +40,7 @@ export default function TableEntry({ entry, onChange, readOnly }) {
     updatePositions();
     window.addEventListener('resize', updatePositions);
     return () => window.removeEventListener('resize', updatePositions);
-  }, [table, readOnly]);
+  }, [table, readOnly, allowResize]);
 
   const updateTable = (newTable) => {
     setTable(newTable);
@@ -84,8 +84,14 @@ export default function TableEntry({ entry, onChange, readOnly }) {
       {/* Label */}
       {readOnly && <div className="font-medium mb-1">{entry.label}</div>}
 
-      {/* Table wrapper with extra padding for delete buttons */}
-      <div className="relative inline-block" style={{ paddingRight: '32px', paddingBottom: '32px' }}>
+      {/* Table wrapper with extra padding for delete buttons (only if allowResize) */}
+      <div 
+        className="relative inline-block" 
+        style={{ 
+          paddingRight: allowResize && !readOnly ? '32px' : '0', 
+          paddingBottom: allowResize && !readOnly ? '32px' : '0' 
+        }}
+      >
         <div ref={tableRef}>
           {/* Table */}
           <table className="border-collapse border w-full">
@@ -111,7 +117,8 @@ export default function TableEntry({ entry, onChange, readOnly }) {
           </table>
         </div>
 
-        {!readOnly && cellPositions.rows.length > 0 && (
+        {/* Delete buttons - only show if allowResize is true */}
+        {!readOnly && allowResize && cellPositions.rows.length > 0 && (
           <>
             {/* Row delete buttons (right side) */}
             {cellPositions.rows.map((pos, rIdx) => (
@@ -174,8 +181,8 @@ export default function TableEntry({ entry, onChange, readOnly }) {
         )}
       </div>
 
-      {/* Add row/column buttons */}
-      {!readOnly && (
+      {/* Add row/column buttons - only show if allowResize is true */}
+      {!readOnly && allowResize && (
         <div className="flex gap-2 mt-1 mb-2" style={{ marginTop: '-12px' }}>
           <button type="button" onClick={addRow} className="text-sm text-blue-500">
             + Row

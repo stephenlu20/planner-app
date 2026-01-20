@@ -4,7 +4,7 @@ import CheckboxEntry from "./CheckboxEntry";
 import TableEntry from "./TableEntry";
 import HeaderEntry from "./HeaderEntry";
 
-export default function EntryRenderer({ entry, onChange, readOnly }) {
+export default function EntryRenderer({ entry, onChange, readOnly, allowResize = true }) {
   return (
     <div className="flex flex-col gap-1">
       {(() => {
@@ -18,7 +18,7 @@ export default function EntryRenderer({ entry, onChange, readOnly }) {
           case "CHECKBOX":
             return <CheckboxEntry entry={entry} onChange={onChange} readOnly={readOnly} />;
           case "TABLE":
-            return <TableEntry entry={entry} onChange={onChange} readOnly={readOnly} />;
+            return <TableEntry entry={entry} onChange={onChange} readOnly={readOnly} allowResize={allowResize} />;
           default:
             return null;
         }
