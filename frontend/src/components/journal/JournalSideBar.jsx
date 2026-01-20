@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { getEventsByCalendar } from "../../api/eventApi";
 import JournalDayEntry from "./JournalDayEntry";
 
@@ -6,9 +7,9 @@ export default function JournalSidebar({ calendar, isOpen, onClose }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [groupedEvents, setGroupedEvents] = useState({});
-  const [sortOrder, setSortOrder] = useState("oldest"); // "oldest" or "newest"
+  const [sortOrder, setSortOrder] = useState("oldest"); // "oldest" | "newest"
 
-  // Fetch events
+  // Fetch events when sidebar opens
   useEffect(() => {
     if (!calendar || !isOpen) return;
 
@@ -31,41 +32,36 @@ export default function JournalSidebar({ calendar, isOpen, onClose }) {
   // Group events by date
   useEffect(() => {
     const grouped = {};
-    
+
     events.forEach(event => {
       if (!event.dateTime) return;
-      
+
       const date = new Date(event.dateTime);
-      const dateKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
-      
+      const dateKey = date.toISOString().split("T")[0];
+
       if (!grouped[dateKey]) {
-        grouped[dateKey] = {
-          date: date,
-          events: []
-        };
+        grouped[dateKey] = { date, events: [] };
       }
-      
+
       grouped[dateKey].events.push(event);
     });
 
     setGroupedEvents(grouped);
   }, [events]);
 
-  // Sort dates based on sortOrder
+  // Sort dates
   const sortedDates = Object.keys(groupedEvents).sort((a, b) => {
-    if (sortOrder === "oldest") {
-      return new Date(a) - new Date(b); // Ascending (oldest first)
-    } else {
-      return new Date(b) - new Date(a); // Descending (newest first)
-    }
+    return sortOrder === "oldest"
+      ? new Date(a) - new Date(b)
+      : new Date(b) - new Date(a);
   });
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
       {/* Overlay */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/20 z-40"
         onClick={onClose}
       />
@@ -81,18 +77,28 @@ export default function JournalSidebar({ calendar, isOpen, onClose }) {
             <button
               onClick={onClose}
               className="text-gray-600 hover:text-gray-800 text-2xl leading-none cursor-pointer"
+              aria-label="Close journal"
             >
               ×
             </button>
           </div>
+
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-600">
-              {sortedDates.length} {sortedDates.length === 1 ? 'day' : 'days'} with events
+              {sortedDates.length}{" "}
+              {sortedDates.length === 1 ? "day" : "days"} with events
             </p>
+
             <button
-              onClick={() => setSortOrder(sortOrder === "oldest" ? "newest" : "oldest")}
+              onClick={() =>
+                setSortOrder(sortOrder === "oldest" ? "newest" : "oldest")
+              }
               className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 transition cursor-pointer text-xs"
-              title={sortOrder === "oldest" ? "Switch to newest first" : "Switch to oldest first"}
+              title={
+                sortOrder === "oldest"
+                  ? "Switch to newest first"
+                  : "Switch to oldest first"
+              }
             >
               {sortOrder === "oldest" ? "↓ Oldest" : "↑ Newest"}
             </button>
@@ -108,7 +114,9 @@ export default function JournalSidebar({ calendar, isOpen, onClose }) {
           ) : sortedDates.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
               <p className="text-lg mb-2">No journal entries yet</p>
-              <p className="text-sm">Events you create will appear here</p>
+              <p className="text-sm">
+                Events you create will appear here
+              </p>
             </div>
           ) : (
             <div className="space-y-8">
@@ -123,6 +131,7 @@ export default function JournalSidebar({ calendar, isOpen, onClose }) {
           )}
         </div>
       </div>
-    </>
+    </>,
+    document.body
   );
 }

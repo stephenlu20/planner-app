@@ -7,6 +7,7 @@ export default function EventDayCard({ event, onEventUpdate }) {
   const [entries, setEntries] = useState([]);
   const [originalEntries, setOriginalEntries] = useState([]);
   const [localNote, setLocalNote] = useState(event.note || "");
+  const [noteEnabled, setNoteEnabled] = useState(Boolean(event.note));
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [toggling, setToggling] = useState(false);
@@ -35,6 +36,11 @@ export default function EventDayCard({ event, onEventUpdate }) {
     setLocalNote(event.note || "");
   }, [event.note]);
 
+  // Sync note enabled state with local note content
+  useEffect(() => {
+    setNoteEnabled(Boolean(localNote));
+  }, [localNote]);
+
   // Check if there are any unsaved changes
   useEffect(() => {
     // Check note changes
@@ -49,6 +55,17 @@ export default function EventDayCard({ event, onEventUpdate }) {
 
     setHasUnsavedChanges(noteChanged || entriesChanged);
   }, [localNote, entries, event.note, originalEntries]);
+
+  // Handle note toggle
+  const handleToggleNote = () => {
+    const next = !noteEnabled;
+    setNoteEnabled(next);
+
+    // IMPORTANT: clear note immediately when toggled off
+    if (!next) {
+      setLocalNote("");
+    }
+  };
 
   // Handle note changes
   const handleNoteChange = (e) => {
@@ -157,14 +174,37 @@ export default function EventDayCard({ event, onEventUpdate }) {
 
       {/* Scrollable Content */}
       <div className="overflow-y-auto flex-1 p-4 space-y-4">
-        {/* Event Note */}
+        {/* Event Note Section with Toggle */}
         <div>
-          <textarea
-            value={localNote}
-            onChange={handleNoteChange}
-            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-            rows={3}
-          />
+          {/* Header row with toggle */}
+          <div className="flex items-center justify-end mb-2">
+            {/* Slider toggle */}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={noteEnabled}
+              onClick={handleToggleNote}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition ${
+                noteEnabled ? "bg-blue-500" : "bg-gray-300"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                  noteEnabled ? "translate-x-4" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+          
+          {/* Note textarea (conditionally rendered) */}
+          {noteEnabled && (
+            <textarea
+              value={localNote}
+              onChange={handleNoteChange}
+              className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              rows={3}
+            />
+          )}
         </div>
 
         {/* Entries */}
@@ -172,7 +212,6 @@ export default function EventDayCard({ event, onEventUpdate }) {
           <div className="text-sm text-gray-500">Loading entries...</div>
         ) : entries.length > 0 ? (
           <div className="space-y-4">
-            <div className="text-sm font-medium text-gray-700">Details</div>
             {entries.map((entry, index) => (
               <div key={entry.id} className="space-y-1">
                 {/* Show label as read-only text */}
