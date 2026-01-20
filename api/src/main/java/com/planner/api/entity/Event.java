@@ -21,7 +21,7 @@ public class Event {
 
     private String note;
 
-    private LocalDateTime dateTime;  // ← THIS MUST BE HERE!
+    private LocalDateTime dateTime;
 
     private boolean completed;
 
