@@ -43,7 +43,7 @@ export default function ApplicationView({ userId, setUserId }) {
         <div className="flex gap-2">
           <button
             onClick={() => setActiveView("calendars")}
-            className={`px-3 py-1 rounded transition ${
+            className={`px-3 py-1 rounded transition cursor-pointer ${
               activeView === "calendars"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -54,7 +54,7 @@ export default function ApplicationView({ userId, setUserId }) {
 
           <button
             onClick={() => setActiveView("templates")}
-            className={`px-3 py-1 rounded transition ${
+            className={`px-3 py-1 rounded transition cursor-pointer ${
               activeView === "templates"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 hover:bg-gray-200"
@@ -84,7 +84,10 @@ export default function ApplicationView({ userId, setUserId }) {
           />
 
           <div className="flex-1 p-6">
-            <Dashboard calendarId={activeCalendarId} />
+            <Dashboard 
+              calendarId={activeCalendarId}
+              calendar={calendars.find(c => c.id === activeCalendarId)}
+            />
           </div>
         </div>
       )}
