@@ -120,7 +120,7 @@ export default function EventDayCard({ event, onEventUpdate }) {
   return (
     <div className="border rounded-lg bg-white shadow-sm max-h-[70vh] flex flex-col overflow-hidden">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-20 bg-white border-b shadow-sm flex-shrink-0">
+      <div className="sticky top-0 z-20 bg-white border-b shadow-sm shrink-0">
         <div className="px-4 py-3 bg-gray-50 rounded-t-lg">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-lg">{event.title || "Event"}</h3>
