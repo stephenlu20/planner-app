@@ -5,6 +5,7 @@ import EntryRenderer from "../entries/EntryRenderer";
 
 export default function EventDayCard({ event, onEventUpdate }) {
   const [entries, setEntries] = useState([]);
+  const [originalEntries, setOriginalEntries] = useState([]);
   const [localNote, setLocalNote] = useState(event.note || "");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -18,6 +19,7 @@ export default function EventDayCard({ event, onEventUpdate }) {
       try {
         const data = await getEntriesBySubject("EVENT", event.id);
         setEntries(data);
+        setOriginalEntries(JSON.parse(JSON.stringify(data))); // Deep clone
       } catch (err) {
         console.error("Failed to fetch entries:", err);
       } finally {
@@ -31,26 +33,68 @@ export default function EventDayCard({ event, onEventUpdate }) {
   // Update local note state when event changes
   useEffect(() => {
     setLocalNote(event.note || "");
-    setHasUnsavedChanges(false);
   }, [event.note]);
+
+  // Check if there are any unsaved changes
+  useEffect(() => {
+    // Check note changes
+    const noteChanged = localNote !== (event.note || "");
+    
+    // Check entry changes
+    const entriesChanged = entries.some((entry, index) => {
+      const original = originalEntries[index];
+      if (!original) return true;
+      return entry.value !== original.value || entry.note !== original.note;
+    });
+
+    setHasUnsavedChanges(noteChanged || entriesChanged);
+  }, [localNote, entries, event.note, originalEntries]);
 
   // Handle note changes
   const handleNoteChange = (e) => {
     setLocalNote(e.target.value);
-    setHasUnsavedChanges(e.target.value !== (event.note || ""));
   };
 
-  // Save event note
-  const handleSave = async () => {
+  // Handle entry value/note changes (just update state, don't save yet)
+  const handleEntryChange = (index, updatedEntry) => {
+    const newEntries = [...entries];
+    newEntries[index] = updatedEntry;
+    setEntries(newEntries);
+  };
+
+  // Save ALL changes (note + all entries)
+  const handleSaveAll = async () => {
     setSaving(true);
     try {
-      const updated = await updateEvent(event.id, localNote);
+      // Save event note
+      const updatedEvent = await updateEvent(event.id, localNote);
+      
+      // Save all entries
+      const savePromises = entries.map((entry, index) => {
+        const original = originalEntries[index];
+        // Only save if changed
+        if (original && (entry.value !== original.value || entry.note !== original.note)) {
+          return updateEntry(entry.id, {
+            label: entry.label,
+            value: entry.value,
+            note: entry.note
+          });
+        }
+        return Promise.resolve();
+      });
+      
+      await Promise.all(savePromises);
+      
+      // Update parent component
       if (onEventUpdate) {
-        onEventUpdate(updated);
+        onEventUpdate(updatedEvent);
       }
+      
+      // Update original entries to match current state
+      setOriginalEntries(JSON.parse(JSON.stringify(entries)));
       setHasUnsavedChanges(false);
     } catch (err) {
-      console.error("Failed to update event:", err);
+      console.error("Failed to save changes:", err);
       alert("Failed to save changes");
     } finally {
       setSaving(false);
@@ -73,31 +117,13 @@ export default function EventDayCard({ event, onEventUpdate }) {
     }
   };
 
-  // Handle entry value/note changes
-  const handleEntryChange = async (index, updatedEntry) => {
-    const newEntries = [...entries];
-    newEntries[index] = updatedEntry;
-    setEntries(newEntries);
-
-    // Save to backend
-    try {
-      await updateEntry(updatedEntry.id, {
-        label: updatedEntry.label,
-        value: updatedEntry.value,
-        note: updatedEntry.note
-      });
-    } catch (err) {
-      console.error("Failed to update entry:", err);
-    }
-  };
-
   return (
-    <div className="border rounded-lg bg-white shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="bg-gray-50 border-b px-4 py-3">
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-lg">{event.title || "Event"}</h3>
-          <div className="flex items-center gap-2">
+    <div className="border rounded-lg bg-white shadow-sm max-h-[70vh] flex flex-col overflow-hidden">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-20 bg-white border-b shadow-sm flex-shrink-0">
+        <div className="px-4 py-3 bg-gray-50 rounded-t-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-lg">{event.title || "Event"}</h3>
             <button
               onClick={handleToggleComplete}
               disabled={toggling}
@@ -110,21 +136,32 @@ export default function EventDayCard({ event, onEventUpdate }) {
               {toggling ? "..." : event.completed ? "✓ Completed" : "Mark Complete"}
             </button>
           </div>
+          
+          {/* Save button and unsaved indicator */}
+          {hasUnsavedChanges && (
+            <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-200">
+              <span className="text-xs text-orange-600 font-medium">
+                ● Unsaved changes
+              </span>
+              <button
+                onClick={handleSaveAll}
+                disabled={saving}
+                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 transition cursor-pointer font-medium"
+              >
+                {saving ? "Saving..." : "Save All Changes"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-4">
+      {/* Scrollable Content */}
+      <div className="overflow-y-auto flex-1 p-4 space-y-4">
         {/* Event Note */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Notes
-            </label>
-            {hasUnsavedChanges && (
-              <span className="text-xs text-orange-600">Unsaved changes</span>
-            )}
-          </div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Notes
+          </label>
           <textarea
             value={localNote}
             onChange={handleNoteChange}
@@ -132,15 +169,6 @@ export default function EventDayCard({ event, onEventUpdate }) {
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={3}
           />
-          {hasUnsavedChanges && (
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="mt-2 px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50 transition cursor-pointer"
-            >
-              {saving ? "Saving..." : "Save Note"}
-            </button>
-          )}
         </div>
 
         {/* Entries */}
