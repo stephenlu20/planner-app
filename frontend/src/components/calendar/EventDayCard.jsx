@@ -185,10 +185,7 @@ export default function EventDayCard({ event, onEventUpdate, onEditEvent }) {
         {/* Event Note Section with Toggle */}
         <div>
           {/* Header row with toggle */}
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Notes
-            </label>
+          <div className="flex items-center justify-end mb-2">
             {/* Slider toggle */}
             <button
               type="button"
@@ -224,7 +221,6 @@ export default function EventDayCard({ event, onEventUpdate, onEditEvent }) {
           <div className="text-sm text-gray-500">Loading entries...</div>
         ) : entries.length > 0 ? (
           <div className="space-y-4">
-            <div className="text-sm font-medium text-gray-700">Details</div>
             {entries.map((entry, index) => (
               <div key={entry.id} className="space-y-1">
                 {/* Show label as read-only text */}
