@@ -9,7 +9,7 @@ export default function Dashboard({ calendarId, calendar }) {
   return (
     <div className="space-y-4">
       {/* Header with Journal buttons */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between height: 1em" >
         <h2 className="text-4xl font-semibold">Cadence</h2>
         
         {calendar && (

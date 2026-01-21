@@ -4,6 +4,7 @@ import Dashboard from "./Dashboard";
 import CalendarSidebar from "../components/calendar/CalendarSidebar";
 import Templates from "./template/Templates";
 import { getCalendarsForUser } from "../api/calendarApi";
+import logo from '../assets/CadenceLogoTransparent.png';
 
 export default function ApplicationView({ userId, setUserId }) {
   const [activeView, setActiveView] = useState("calendars");
@@ -41,6 +42,11 @@ export default function ApplicationView({ userId, setUserId }) {
       {/* Top bar */}
       <div className="flex justify-between items-center p-4 border-b bg-white">
         <div className="flex gap-2">
+          <img
+            src={logo}
+            alt="Cadence Logo"
+            className="h-10 w-auto" // adjust h-10 to match your text size
+          />
           <button
             onClick={() => setActiveView("calendars")}
             className={`px-3 py-1 rounded transition cursor-pointer ${
