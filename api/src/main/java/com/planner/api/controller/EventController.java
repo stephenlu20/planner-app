@@ -61,7 +61,9 @@ public class EventController {
     @PostMapping
     public EventResponseDTO createEvent(@RequestBody EventCreateRequestDTO request) {
         Event event = eventService.createEvent(
+                request.getTitle(),
                 request.getNote(),
+                request.getDateTime(),
                 request.getOrderIndex(),
                 request.getUserId(),
                 request.getCalendarId()
@@ -91,7 +93,7 @@ public class EventController {
     @PutMapping("/{eventId}")
     public EventResponseDTO updateEvent(@PathVariable UUID eventId, 
                                     @RequestBody EventUpdateRequestDTO request) {
-        Event updated = eventService.updateEvent(eventId, request.getNote());
+        Event updated = eventService.updateEvent(eventId, request.getTitle(), request.getNote(), request.getDateTime());
         return toDto(updated);
     }
 }

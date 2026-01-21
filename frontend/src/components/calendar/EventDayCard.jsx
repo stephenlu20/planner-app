@@ -3,7 +3,7 @@ import { getEntriesBySubject, updateEntry } from "../../api/entryApi";
 import { toggleEventCompleted, updateEvent } from "../../api/eventApi";
 import EntryRenderer from "../entries/EntryRenderer";
 
-export default function EventDayCard({ event, onEventUpdate }) {
+export default function EventDayCard({ event, onEventUpdate, onEditEvent }) {
   const [entries, setEntries] = useState([]);
   const [originalEntries, setOriginalEntries] = useState([]);
   const [localNote, setLocalNote] = useState(event.note || "");
@@ -141,17 +141,25 @@ export default function EventDayCard({ event, onEventUpdate }) {
         <div className="px-4 py-3 bg-gray-50 rounded-t-lg">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-lg">{event.title || "Event"}</h3>
-            <button
-              onClick={handleToggleComplete}
-              disabled={toggling}
-              className={`px-3 py-1 text-xs rounded font-medium transition cursor-pointer ${
-                event.completed
-                  ? "bg-green-100 text-green-700 hover:bg-green-200"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-              } disabled:opacity-50`}
-            >
-              {toggling ? "..." : event.completed ? "✓ Completed" : "Mark Complete"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onEditEvent && onEditEvent(event)}
+                className="px-3 py-1 text-xs rounded font-medium transition cursor-pointer bg-gray-100 text-gray-600 hover:bg-gray-200"
+              >
+                ✎ Edit
+              </button>
+              <button
+                onClick={handleToggleComplete}
+                disabled={toggling}
+                className={`px-3 py-1 text-xs rounded font-medium transition cursor-pointer ${
+                  event.completed
+                    ? "bg-green-100 text-green-700 hover:bg-green-200"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                } disabled:opacity-50`}
+              >
+                {toggling ? "..." : event.completed ? "✓ Completed" : "Mark Complete"}
+              </button>
+            </div>
           </div>
           
           {/* Save button and unsaved indicator */}
@@ -177,7 +185,10 @@ export default function EventDayCard({ event, onEventUpdate }) {
         {/* Event Note Section with Toggle */}
         <div>
           {/* Header row with toggle */}
-          <div className="flex items-center justify-end mb-2">
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Notes
+            </label>
             {/* Slider toggle */}
             <button
               type="button"
@@ -201,6 +212,7 @@ export default function EventDayCard({ event, onEventUpdate }) {
             <textarea
               value={localNote}
               onChange={handleNoteChange}
+              placeholder="Add notes about this event..."
               className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               rows={3}
             />
@@ -212,6 +224,7 @@ export default function EventDayCard({ event, onEventUpdate }) {
           <div className="text-sm text-gray-500">Loading entries...</div>
         ) : entries.length > 0 ? (
           <div className="space-y-4">
+            <div className="text-sm font-medium text-gray-700">Details</div>
             {entries.map((entry, index) => (
               <div key={entry.id} className="space-y-1">
                 {/* Show label as read-only text */}

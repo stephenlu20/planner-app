@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Calendar from "../components/calendar/Calendar";
-import JournalSidebar from "../components/journal/JournalSidebar";
+import JournalSidebar from "../components/journal/JournalSideBar";
 
 export default function Dashboard({ calendarId, calendar }) {
   const [showJournalSidebar, setShowJournalSidebar] = useState(false);

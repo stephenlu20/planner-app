@@ -1,10 +1,13 @@
 package com.planner.api.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class EventCreateRequestDTO {
 
+    private String title;
     private String note;
+    private LocalDateTime dateTime; 
     private int orderIndex;
     private Long userId;
     private UUID calendarId;
@@ -19,8 +22,16 @@ public class EventCreateRequestDTO {
         this.calendarId = calendarId;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     public String getNote() {
         return note;
+    }
+
+    public LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public int getOrderIndex() {

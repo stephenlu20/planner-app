@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import java.time.LocalDateTime;
 
 @SpringBootTest
 class EventServiceTest {
@@ -45,12 +46,15 @@ class EventServiceTest {
     void shouldCreateEvent() {
         User user = userRepository.save(new User("alice"));
         Calendar calendar = calendarRepository.save(new Calendar(user, "Work"));
+        LocalDateTime dateTime = LocalDateTime.of(2026, 1, 1, 10, 0);
+        Event event = eventService.createEvent("Meeting", "Review application diagram", dateTime,  1, user.getId(), calendar.getId());
 
-        Event event = eventService.createEvent("Meeting", 1, user.getId(), calendar.getId());
-
-        assertThat(event.getNote()).isEqualTo("Meeting");
+        assertThat(event.getTitle()).isEqualTo("Meeting");
+        assertThat(event.getNote()).isEqualTo("Review application diagram");
+        assertThat(event.getDateTime()).isEqualTo(dateTime);
         assertThat(event.getOrderIndex()).isEqualTo(1);
         assertThat(event.getUser().getId()).isEqualTo(user.getId());
         assertThat(event.getCalendar().getId()).isEqualTo(calendar.getId());
+
     }
 }

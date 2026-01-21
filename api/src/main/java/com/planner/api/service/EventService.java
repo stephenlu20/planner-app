@@ -7,6 +7,7 @@ import com.planner.api.repository.EventRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,10 +43,10 @@ public class EventService {
         return eventRepository.save(event);
     }
 
-    public Event createEvent(String note, int orderIndex, Long userId, UUID calendarId) {
+    public Event createEvent(String title, String note, LocalDateTime dateTime, int orderIndex, Long userId, UUID calendarId) {
         User user = userService.getUser(userId);
         Calendar calendar = calendarService.getCalendar(calendarId);
-        Event event = new Event(user, calendar, note, orderIndex);
+        Event event = new Event(title, note, dateTime, user, calendar, orderIndex);
         return eventRepository.save(event);
     }
 
@@ -100,11 +101,13 @@ public class EventService {
         eventRepository.delete(event);
     }
 
-    public Event updateEvent(UUID eventId, String note) {
+    public Event updateEvent(UUID eventId, String title, String note, LocalDateTime dateTime) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
         
         event.setNote(note);
+        event.setTitle(title);
+        event.setDateTime(dateTime);
         return eventRepository.save(event);
     }
 }

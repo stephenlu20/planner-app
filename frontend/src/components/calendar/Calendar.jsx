@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { getEventsByCalendar } from "../../api/eventApi";
 import EventDayCard from "./EventDayCard";
+import EventFormModal from "./EventFormModal";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-export default function Calendar({ calendarId }) {
+export default function Calendar({ calendarId, userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("day");
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showEventModal, setShowEventModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState(null);
 
   // Fetch events when calendar changes
   useEffect(() => {
@@ -63,6 +66,29 @@ export default function Calendar({ calendarId }) {
     ));
   };
 
+  // Handle creating new event
+  const handleCreateEvent = () => {
+    setEditingEvent(null);
+    setShowEventModal(true);
+  };
+
+  // Handle editing event
+  const handleEditEvent = (event) => {
+    setEditingEvent(event);
+    setShowEventModal(true);
+  };
+
+  // Handle event saved (created or updated)
+  const handleEventSaved = (savedEvent) => {
+    if (editingEvent) {
+      // Update existing event
+      handleEventUpdate(savedEvent);
+    } else {
+      // Add new event
+      setEvents(prev => [...prev, savedEvent]);
+    }
+  };
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -110,19 +136,19 @@ export default function Calendar({ calendarId }) {
         <div className="flex gap-2">
           <button
             onClick={() => setView("month")}
-            className={`px-3 py-1 rounded cursor-pointer ${view === "month" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded ${view === "month" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Month
           </button>
           <button
             onClick={() => setView("week")}
-            className={`px-3 py-1 rounded cursor-pointer ${view === "week" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded ${view === "week" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Week
           </button>
           <button
             onClick={() => setView("day")}
-            className={`px-3 py-1 rounded cursor-pointer ${view === "day" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+            className={`px-3 py-1 rounded ${view === "day" ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
           >
             Day
           </button>
@@ -131,7 +157,7 @@ export default function Calendar({ calendarId }) {
         <div className="flex items-center gap-2">
           <button
             onClick={prev}
-            className="px-3 py-1 rounded cursor-pointer bg-gray-200 hover:bg-gray-300 transition"
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
           >
             Previous
           </button>
@@ -142,7 +168,7 @@ export default function Calendar({ calendarId }) {
 
           <button
             onClick={next}
-            className="px-3 py-1 rounded cursor-pointer bg-gray-200 hover:bg-gray-300 transition"
+            className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 transition"
           >
             Next
           </button>
@@ -240,9 +266,19 @@ export default function Calendar({ calendarId }) {
 
       {view === "day" && (
         <div className="min-h-96">
-          <div className="mb-4">
-            <h3 className="font-semibold text-lg">{DAYS[currentDate.getDay()]}</h3>
-            <p className="text-sm text-gray-500">{dayLabel}</p>
+          {/* Day header with create button */}
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-lg">{DAYS[currentDate.getDay()]}</h3>
+              <p className="text-sm text-gray-500">{dayLabel}</p>
+            </div>
+            
+            <button
+              onClick={handleCreateEvent}
+              className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition cursor-pointer text-sm"
+            >
+              + Add Event
+            </button>
           </div>
           
           <div className="space-y-4">
@@ -256,11 +292,24 @@ export default function Calendar({ calendarId }) {
                   key={event.id}
                   event={event}
                   onEventUpdate={handleEventUpdate}
+                  onEditEvent={handleEditEvent}
                 />
               ))
             )}
           </div>
         </div>
+      )}
+
+      {/* Event Form Modal */}
+      {showEventModal && (
+        <EventFormModal
+          userId={userId}
+          calendarId={calendarId}
+          event={editingEvent}
+          selectedDate={currentDate}
+          onClose={() => setShowEventModal(false)}
+          onSaved={handleEventSaved}
+        />
       )}
     </div>
   );
