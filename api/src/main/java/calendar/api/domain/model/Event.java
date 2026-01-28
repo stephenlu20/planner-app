@@ -11,26 +11,25 @@ public final class Event {
     private final UUID calendarId;
     private final String title;
     private final String description;
-    private final ZonedDateTime startTime; // anchor
+    private final ZonedDateTime startTime;   // anchor
     private final ZonedDateTime endTime;
     private final ZoneId timeZone;
     private final boolean allDay;
     private final EventStatus status;
     private final RecurrenceRule recurrenceRule; // nullable
 
-
     public Event(
-        UUID id,
-        UUID calendarId,
-        String title,
-        String description,
-        ZonedDateTime startTime,
-        ZonedDateTime endTime,
-        ZoneId timeZone,
-        boolean allDay,
-        EventStatus status,
-        RecurrenceRule recurrenceRule) {
-
+            UUID id,
+            UUID calendarId,
+            String title,
+            String description,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime,
+            ZoneId timeZone,
+            boolean allDay,
+            EventStatus status,
+            RecurrenceRule recurrenceRule
+    ) {
         this.id = Objects.requireNonNull(id);
         this.calendarId = Objects.requireNonNull(calendarId);
         this.title = Objects.requireNonNull(title);
@@ -41,8 +40,7 @@ public final class Event {
         this.allDay = allDay;
         this.status = Objects.requireNonNull(status);
         this.recurrenceRule = recurrenceRule;
-        }
-
+    }
 
     public UUID id() { return id; }
     public UUID calendarId() { return calendarId; }
