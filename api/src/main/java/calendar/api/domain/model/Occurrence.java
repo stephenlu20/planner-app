@@ -17,6 +17,14 @@ public final class Occurrence {
         this.overridden = overridden;
     }
 
+    public Occurrence(
+            UUID eventId,
+            ZonedDateTime startTime,
+            ZonedDateTime endTime
+    ) {
+        this(eventId, startTime, endTime, false);
+    }
+
     public UUID eventId() { return eventId; }
     public ZonedDateTime startTime() { return startTime; }
     public ZonedDateTime endTime() { return endTime; }

@@ -1,7 +1,8 @@
 package calendar.api.domain.model;
 
-enum Frequency {
+public enum Frequency {
     DAILY,
     WEEKLY,
-    MONTHLY
+    MONTHLY,
+    YEARLY
 }

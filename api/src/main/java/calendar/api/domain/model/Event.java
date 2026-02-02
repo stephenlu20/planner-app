@@ -11,12 +11,12 @@ public final class Event {
     private final UUID calendarId;
     private final String title;
     private final String description;
-    private final ZonedDateTime startTime;   // anchor
+    private final ZonedDateTime startTime;
     private final ZonedDateTime endTime;
     private final ZoneId timeZone;
     private final boolean allDay;
     private final EventStatus status;
-    private final RecurrenceRule recurrenceRule; // nullable
+    private final RecurrenceRule recurrenceRule;
 
     public Event(
             UUID id,

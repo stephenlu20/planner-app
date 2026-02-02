@@ -9,9 +9,9 @@ public final class RecurrenceRule {
 
     private final Frequency frequency;
     private final int interval;
-    private final Integer count;                 // optional
-    private final ZonedDateTime until;            // optional
-    private final Set<DayOfWeekOrdinal> byDay;    // optional
+    private final Integer count;
+    private final ZonedDateTime until;
+    private final Set<DayOfWeekOrdinal> byDay;
 
     public RecurrenceRule(
             Frequency frequency,
@@ -22,9 +22,14 @@ public final class RecurrenceRule {
     ) {
         this.frequency = Objects.requireNonNull(frequency);
         this.interval = interval <= 0 ? 1 : interval;
+
+        if (count != null && until != null) {
+            throw new IllegalArgumentException("RRULE cannot have both COUNT and UNTIL");
+        }
+
         this.count = count;
         this.until = until;
-        this.byDay = byDay;
+        this.byDay = byDay == null ? Set.of() : Set.copyOf(byDay);
     }
 
     public Frequency frequency() { return frequency; }
