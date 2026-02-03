@@ -1,6 +1,6 @@
 package calendar.api.domain.model;
 
-enum EventStatus {
+public enum EventStatus {
     CONFIRMED,
     CANCELLED
 }

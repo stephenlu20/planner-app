@@ -1,6 +1,7 @@
 package calendar.api.domain.service;
 
 import calendar.api.domain.model.Event;
+import calendar.api.domain.model.Frequency;
 import calendar.api.domain.model.Occurrence;
 import calendar.api.domain.model.RecurrenceRule;
 import calendar.api.domain.value.DayOfWeekOrdinal;
@@ -19,45 +20,89 @@ public final class RecurrenceExpander {
             ZonedDateTime rangeEnd
     ) {
         List<Occurrence> results = new ArrayList<>();
-
         RecurrenceRule rule = event.recurrenceRule();
 
-        // Non-recurring shortcut
         if (rule == null) {
             if (overlaps(event.startTime(), event.endTime(), rangeStart, rangeEnd)) {
-                results.add(new Occurrence(
-                        event.id(),
-                        event.startTime(),
-                        event.endTime()
-                ));
+                results.add(new Occurrence(event.id(), event.startTime(), event.endTime()));
             }
             return results;
         }
 
-        ZonedDateTime cursor = event.startTime();
         long durationMinutes = ChronoUnit.MINUTES.between(event.startTime(), event.endTime());
+        
+        // Special handling for WEEKLY + BYDAY
+        if (rule.frequency() == Frequency.WEEKLY && !rule.byDay().isEmpty()) {
+            return expandWeeklyByDay(event, rule, rangeStart, rangeEnd, durationMinutes);
+        }
+
+        // Standard expansion for other cases
+        ZonedDateTime cursor = event.startTime();
         int generated = 0;
 
         while (shouldContinue(cursor, rule, rangeEnd, generated)) {
-
             if (matchesByDay(cursor, rule.byDay())) {
-
                 ZonedDateTime occurrenceEnd = cursor.plusMinutes(durationMinutes);
-
                 if (overlaps(cursor, occurrenceEnd, rangeStart, rangeEnd)) {
-                    results.add(new Occurrence(
-                            event.id(),
-                            cursor,
-                            occurrenceEnd
-                    ));
+                    results.add(new Occurrence(event.id(), cursor, occurrenceEnd));
                 }
-
                 generated++;
             }
-
             cursor = advance(cursor, rule);
         }
 
+        return results;
+    }
+
+    private List<Occurrence> expandWeeklyByDay(
+            Event event,
+            RecurrenceRule rule,
+            ZonedDateTime rangeStart,
+            ZonedDateTime rangeEnd,
+            long durationMinutes
+    ) {
+        List<Occurrence> results = new ArrayList<>();
+        
+        // Start from the beginning of the week containing event start
+        ZonedDateTime weekCursor = event.startTime();
+        int weekCount = 0;
+        
+        while (true) {
+            // For this week, generate occurrences for each BYDAY
+            int occurrencesThisWeek = 0;
+            
+            for (DayOfWeekOrdinal dwo : rule.byDay()) {
+                // Find the date for this day of week in the current week
+                ZonedDateTime dayInWeek = weekCursor.with(dwo.dayOfWeek());
+                
+                // Ensure it's not before the event start
+                if (dayInWeek.isBefore(event.startTime())) {
+                    continue;
+                }
+                
+                ZonedDateTime occurrenceEnd = dayInWeek.plusMinutes(durationMinutes);
+                
+                if (overlaps(dayInWeek, occurrenceEnd, rangeStart, rangeEnd)) {
+                    results.add(new Occurrence(event.id(), dayInWeek, occurrenceEnd));
+                }
+                
+                occurrencesThisWeek++;
+            }
+            
+            // Check stopping conditions
+            weekCount++;
+            weekCursor = weekCursor.plusWeeks(rule.interval());
+            
+            if (weekCursor.isAfter(rangeEnd)) break;
+            if (rule.until() != null && weekCursor.isAfter(rule.until())) break;
+            if (rule.count() != null && results.size() >= rule.count()) break;
+        }
+        
+        // Trim to exact count if specified
+        if (rule.count() != null && results.size() > rule.count()) {
+            return results.subList(0, rule.count());
+        }
+        
         return results;
     }
 
