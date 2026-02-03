@@ -62,20 +62,12 @@ public final class RecurrenceExpander {
             long durationMinutes
     ) {
         List<Occurrence> results = new ArrayList<>();
-        
-        // Start from the beginning of the week containing event start
         ZonedDateTime weekCursor = event.startTime();
-        int weekCount = 0;
         
         while (true) {
-            // For this week, generate occurrences for each BYDAY
-            int occurrencesThisWeek = 0;
-            
             for (DayOfWeekOrdinal dwo : rule.byDay()) {
-                // Find the date for this day of week in the current week
                 ZonedDateTime dayInWeek = weekCursor.with(dwo.dayOfWeek());
                 
-                // Ensure it's not before the event start
                 if (dayInWeek.isBefore(event.startTime())) {
                     continue;
                 }
@@ -85,14 +77,12 @@ public final class RecurrenceExpander {
                 if (overlaps(dayInWeek, occurrenceEnd, rangeStart, rangeEnd)) {
                     results.add(new Occurrence(event.id(), dayInWeek, occurrenceEnd));
                 }
-                
-                occurrencesThisWeek++;
             }
             
-            // Check stopping conditions
-            weekCount++;
+            // Advance to next week
             weekCursor = weekCursor.plusWeeks(rule.interval());
             
+            // Stopping conditions
             if (weekCursor.isAfter(rangeEnd)) break;
             if (rule.until() != null && weekCursor.isAfter(rule.until())) break;
             if (rule.count() != null && results.size() >= rule.count()) break;
