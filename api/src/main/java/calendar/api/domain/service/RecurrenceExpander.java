@@ -92,9 +92,31 @@ public final class RecurrenceExpander {
         return switch (rule.frequency()) {
             case DAILY -> cursor.plusDays(rule.interval());
             case WEEKLY -> cursor.plusWeeks(rule.interval());
-            case MONTHLY -> cursor.plusMonths(rule.interval());
+            case MONTHLY -> advanceMonthly(cursor, rule);
             case YEARLY -> cursor.plusYears(rule.interval());
         };
+    }
+
+    private ZonedDateTime advanceMonthly(ZonedDateTime cursor, RecurrenceRule rule) {
+        if (rule.byDay() == null || rule.byDay().isEmpty()) {
+            return cursor.plusMonths(rule.interval());
+        }
+        
+        // For MONTHLY+BYDAY, move to next month and find first matching day
+        ZonedDateTime nextMonth = cursor.plusMonths(rule.interval());
+        ZonedDateTime firstOfMonth = nextMonth.withDayOfMonth(1).withHour(cursor.getHour())
+                .withMinute(cursor.getMinute()).withSecond(cursor.getSecond());
+        
+        // Find first matching day in the month
+        for (int day = 1; day <= nextMonth.toLocalDate().lengthOfMonth(); day++) {
+            ZonedDateTime candidate = firstOfMonth.withDayOfMonth(day);
+            if (matchesByDay(candidate, rule.byDay())) {
+                return candidate;
+            }
+        }
+        
+        // No match found, skip this month
+        return nextMonth.plusMonths(1).withDayOfMonth(1);
     }
 
     private boolean overlaps(
